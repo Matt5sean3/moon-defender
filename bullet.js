@@ -13,7 +13,6 @@ Bullet.prototype.draw = function(ctx) {
     ctx.translate(this.pos.x, this.pos.y);
     ctx.rotate(this.vel.angle()+Math.PI/2);
     this.render(ctx);
-    renderBullet(ctx);
     ctx.restore();
 }
 
