@@ -1,59 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Moon Defender</title>
-	<style type="text/css">
-		html,body {
-			background-color: #333;
-			color: #fff;
-			font-family: helvetica, arial, sans-serif;
-			margin: 0;
-			padding: 0;
-			font-size: 12pt;
-		}
-		@font-face {
-   		 	font-family: 'joystix';
-   		 	src: url('joystix_monospace.ttf');
-		}
-		#canvas {
-			position: absolute;
-		left: 0;
-			background: #000000;
-			top: 0;
-			bottom: 0;
-			right: 0;
-			width: 800px;
-			height: 600px;
-			margin: auto;
-			cursor: url("crosshair.ico"),default;
-		}
-	</style>
-	<script type="text/javascript" src="victor.min.js"></script>
-	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-	<script type="text/javascript" src="shims.js"></script>
-	
-	<script type="text/javascript" src="entities.js"></script>
-	<script type="text/javascript" src="collisions.js"></script>
-	<script type="text/javascript" src="mass.js"></script>
-	
-	<script type="text/javascript" src="screen.js"></script>
-	<script type="text/javascript" src="loadscreen.js"></script>
-	<script type="text/javascript" src="splash.js"></script>
-	<script type="text/javascript" src="menu.js"></script>
-	<script type="text/javascript" src="level.js"></script>
-	
-	<script type="text/javascript" src="stars.js"></script>
-	<script type="text/javascript" src="gun.js"></script>
-	<script type="text/javascript" src="moon.js"></script>
-	<script type="text/javascript" src="bullet.js"></script>
-	<script type="text/javascript" src="fighter.js"></script>
-	<!--<script type="text/javascript" src="lib/impact/impact.js"></script>
-	##<script type="text/javascript" src="lib/game/main.js"></script>-->
-	
+    <title>Moon Defender</title>
+    <style type="text/css">
+        html,body {
+            background-color: #333;
+            color: #fff;
+            font-family: helvetica, arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 12pt;
+        }
+        @font-face {
+                font-family: 'joystix';
+                src: url('joystix_monospace.ttf');
+        }
+        #canvas {
+            position: absolute;
+        left: 0;
+            background: #000000;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 800px;
+            height: 600px;
+            margin: auto;
+            cursor: url("crosshair.ico"),default;
+        }
+    </style>
+    <script type="text/javascript" src="victor.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="shims.js"></script>
+    
+    <script type="text/javascript" src="entities.js"></script>
+    <script type="text/javascript" src="collisions.js"></script>
+    <script type="text/javascript" src="mass.js"></script>
+    
+    <script type="text/javascript" src="screen.js"></script>
+    <script type="text/javascript" src="loadscreen.js"></script>
+    <script type="text/javascript" src="splash.js"></script>
+    <script type="text/javascript" src="menu.js"></script>
+    <script type="text/javascript" src="level.js"></script>
+    
+    <script type="text/javascript" src="stars.js"></script>
+    <script type="text/javascript" src="gun.js"></script>
+    <script type="text/javascript" src="moon.js"></script>
+    <script type="text/javascript" src="bullet.js"></script>
+    <script type="text/javascript" src="fighter.js"></script>
+    <!--<script type="text/javascript" src="lib/impact/impact.js"></script>
+    ##<script type="text/javascript" src="lib/game/main.js"></script>-->
+    
 
 </head>
 <body>
-	<canvas width="800" height="600" id="canvas"></canvas>
+    <canvas width="800" height="600" id="canvas"></canvas>
 </body>
 
 <script type="text/javascript">
@@ -62,268 +62,268 @@
 
 // === START PLAY SCREEN
 function PlayScreen(ctx, game) {
-	Screen.call(this, ctx);
-	this.game = game;
-	this.clickHanlder = game.handleClick.bind(game);
-	this.moveHandler = game.handleMove.bind(game);
-	this.contextHandler = game.handleContext.bind(game);
-	this.addCanvasHandler("mousedown", game.handleClick.bind(game));
-	this.addCanvasHandler("mousemove", game.handleMove.bind(game));
-	this.addCanvasHandler("contextmenu", game.handleContext.bind(game));
+    Screen.call(this, ctx);
+    this.game = game;
+    this.clickHanlder = game.handleClick.bind(game);
+    this.moveHandler = game.handleMove.bind(game);
+    this.contextHandler = game.handleContext.bind(game);
+    this.addCanvasHandler("mousedown", game.handleClick.bind(game));
+    this.addCanvasHandler("mousemove", game.handleMove.bind(game));
+    this.addCanvasHandler("contextmenu", game.handleContext.bind(game));
 }
 
 PlayScreen.prototype = new Screen();
 
 PlayScreen.prototype.open = function() {
-	Screen.prototype.open.call(this);
-	this.game.start();
+    Screen.prototype.open.call(this);
+    this.game.start();
 }
 
 PlayScreen.prototype.draw = function(currentTime) {
-	Screen.prototype.draw.call(this, currentTime);
-	// draw the background of stars
-	animate(this.ctx, this.elapsedTime / 1000); 
-	// update the play entities
-	this.game.step(this.elapsedTime, this.dt);
-	// draw the play entities
-	this.ctx.save();
-	this.ctx.translate(this.ctx.canvas.width/2, this.ctx.canvas.height/2);
-	var entities = this.game.getEntities();
+    Screen.prototype.draw.call(this, currentTime);
+    // draw the background of stars
+    animate(this.ctx, this.elapsedTime / 1000); 
+    // update the play entities
+    this.game.step(this.elapsedTime, this.dt);
+    // draw the play entities
+    this.ctx.save();
+    this.ctx.translate(this.ctx.canvas.width/2, this.ctx.canvas.height/2);
+    var entities = this.game.getEntities();
 
-	for(var i = 0; i < entities.length; i++)
-		entities[i].draw(this.ctx);
-		
-	this.ctx.restore();
-	
-	this.ctx.save();
-	this.ctx.font = "24px joystix";
-	this.ctx.fillText("Moon Defender", 10, 50);
-	this.ctx.restore();
+    for(var i = 0; i < entities.length; i++)
+        entities[i].draw(this.ctx);
+        
+    this.ctx.restore();
+    
+    this.ctx.save();
+    this.ctx.font = "24px joystix";
+    this.ctx.fillText("Moon Defender", 10, 50);
+    this.ctx.restore();
 }
 // === END PLAY SCREEN
 
 function Game(ctx) {
-	this.ctx = ctx;
-	
-	this.moon = new Moon(300000, new Victor(0, 0));
-	this.gun = new Gun(20, new Victor(0, -20), 0);
-	this.bullets = [];
-	this.fighters = [];
-	this.collisions = new CollisionGroup();
-	
-	this.gunpos = Victor((canvas.width/2)-10,(canvas.height/2)-51);
+    this.ctx = ctx;
+    
+    this.moon = new Moon(300000, new Victor(0, 0));
+    this.gun = new Gun(20, new Victor(0, -20), 0);
+    this.bullets = [];
+    this.fighters = [];
+    this.collisions = new CollisionGroup();
+    
+    this.gunpos = Victor((canvas.width/2)-10,(canvas.height/2)-51);
 
-	this.mouse = new Victor(0, 0);
-	
-	// more game resources
-	this.moon_img = new Image();
-	this.moon_img.src = './40px_Moon.png';
-	
-	this.theme_audio = new Audio();
-	this.theme_audio.src = 'theme1.ogg';
-	
-	this.blaster_audio = new Audio();
-	this.blaster_audio.src = 'blaster.ogg';
-	
-	this.ambient_audio = new Audio();
-	this.ambient_audio.src = 'ambient.ogg';
-	
-	this.torpedo_audio = new Audio();
-	this.torpedo_audio.src = 'torpedo.ogg';
-	
-	this.level = null;
+    this.mouse = new Victor(0, 0);
+    
+    // more game resources
+    this.moon_img = new Image();
+    this.moon_img.src = './40px_Moon.png';
+    
+    this.theme_audio = new Audio();
+    this.theme_audio.src = 'theme1.ogg';
+    
+    this.blaster_audio = new Audio();
+    this.blaster_audio.src = 'blaster.ogg';
+    
+    this.ambient_audio = new Audio();
+    this.ambient_audio.src = 'ambient.ogg';
+    
+    this.torpedo_audio = new Audio();
+    this.torpedo_audio.src = 'torpedo.ogg';
+    
+    this.level = null;
 }
 
 Game.prototype.getEntities = function() {
-	var entities = [];
-	entities.push(this.moon);
-	entities.push(this.gun);
-	entities.push.apply(entities, this.bullets);
-	entities.push.apply(entities, this.fighters);
-	return entities;
+    var entities = [];
+    entities.push(this.moon);
+    entities.push(this.gun);
+    entities.push.apply(entities, this.bullets);
+    entities.push.apply(entities, this.fighters);
+    return entities;
 }
 
 Game.prototype.start = function() {
-	// reset the stage
-	this.moon = new Moon(300000, new Victor(0, 0));
-	this.gun = new Gun(20, new Victor(0, -20), 0);
-	this.bullets = [];
-	this.fighters = [];
-	this.collisions = new CollisionGroup();
-	
-	this.gunpos = Victor((canvas.width/2)-10,(canvas.height/2)-51);
-	
-	// add the test fighter
-	this.addFighter(new Victor(200, 200), new Victor(4, -1));
+    // reset the stage
+    this.moon = new Moon(300000, new Victor(0, 0));
+    this.gun = new Gun(20, new Victor(0, -20), 0);
+    this.bullets = [];
+    this.fighters = [];
+    this.collisions = new CollisionGroup();
+    
+    this.gunpos = Victor((canvas.width/2)-10,(canvas.height/2)-51);
+    
+    // add the test fighter
+    this.addFighter(new Victor(200, 200), new Victor(4, -1));
 
-	this.theme_audio.loop = true;
-	this.theme_audio.play();
+    this.theme_audio.loop = true;
+    this.theme_audio.play();
 }
 
 Game.prototype.addFighter = function(pos, vel) {
-	var fighter = new Fighter(100, pos, vel);
-	fighter.addGravity(this.moon);
-	this.fighters.push(fighter);
+    var fighter = new Fighter(100, pos, vel);
+    fighter.addGravity(this.moon);
+    this.fighters.push(fighter);
 }
 
 Game.prototype.cleanFighters = function(fighter) {
-	// remove the fighter from the list of fighters
-	for(var i = 0; i < this.fighters.length; i++)
-		if(this.fighters[i].isDestroyed()) {
-			this.fighters.splice(i, 1);
-			i--;
-		}
+    // remove the fighter from the list of fighters
+    for(var i = 0; i < this.fighters.length; i++)
+        if(this.fighters[i].isDestroyed()) {
+            this.fighters.splice(i, 1);
+            i--;
+        }
 }
 
 Game.prototype.cleanBullets = function() {
-	for(var i = 0; i < this.bullets.length; i++)
-		if(this.bullets[i].isDestroyed()) {
-			this.bullets.splice(i, 1);
-			i--;
-		}
+    for(var i = 0; i < this.bullets.length; i++)
+        if(this.bullets[i].isDestroyed()) {
+            this.bullets.splice(i, 1);
+            i--;
+        }
 }
 
 Game.prototype.addBullet = function(pos, vel) {
-	var bullet = new Bullet(5, pos, vel);
-	bullet.addGravity(this.moon);
-	// add collision events between the bullet and all current fighters
-	for (var i = 0; i < this.fighters.length; i++) {
-		var fighter = this.fighters[i];
-		this.collisions.addCollisionEvent(
-			bullet, 
-			fighter, 
-			this.bulletCollideFighter.bind(this, bullet, fighter));
-	}
-	this.bullets.push(bullet);
-	this.torpedo_audio.pause();
-	this.torpedo_audio.currentTime = 0;
-	this.torpedo_audio.play();
+    var bullet = new Bullet(5, pos, vel);
+    bullet.addGravity(this.moon);
+    // add collision events between the bullet and all current fighters
+    for (var i = 0; i < this.fighters.length; i++) {
+        var fighter = this.fighters[i];
+        this.collisions.addCollisionEvent(
+            bullet, 
+            fighter, 
+            this.bulletCollideFighter.bind(this, bullet, fighter));
+    }
+    this.bullets.push(bullet);
+    this.torpedo_audio.pause();
+    this.torpedo_audio.currentTime = 0;
+    this.torpedo_audio.play();
 }
 
 Game.prototype.bulletCollideFighter = function(bullet, fighter) {
-	console.log("Fighter destroyed!");
-	// destroy the bullet
-	bullet.destroy();
-	fighter.destroy();
-	// clean collisions
-	this.collisions.clean();
-	// clean fighters
-	this.cleanFighters();
-	// clean bullets
-	this.cleanBullets();
+    console.log("Fighter destroyed!");
+    // destroy the bullet
+    bullet.destroy();
+    fighter.destroy();
+    // clean collisions
+    this.collisions.clean();
+    // clean fighters
+    this.cleanFighters();
+    // clean bullets
+    this.cleanBullets();
 }
 
 Game.prototype.shootLaser = function() {
-	this.blaster_audio.pause();
-	this.blaster_audio.currentTime = 0;
-	this.blaster_audio.play();
+    this.blaster_audio.pause();
+    this.blaster_audio.currentTime = 0;
+    this.blaster_audio.play();
 }
 
 Game.prototype.handleClick = function(e) {
-	e.preventDefault();
+    e.preventDefault();
 
-	// again emulates offsetX and offsetY, need a shim function for this somewhere
-	this.mouse = getMousePosition(e, this.ctx.canvas);
-	var missile_power = 200;
-	// create a new bullet
-	
-	var gunAngle = this.gun.getAngle() + Math.PI * 5 / 4;
-	var v = new Victor(10,10).rotate(gunAngle);
-	v.add(new Victor(0,-30));
+    // again emulates offsetX and offsetY, need a shim function for this somewhere
+    this.mouse = getMousePosition(e, this.ctx.canvas);
+    var missile_power = 200;
+    // create a new bullet
+    
+    var gunAngle = this.gun.getAngle() + Math.PI * 5 / 4;
+    var v = new Victor(10,10).rotate(gunAngle);
+    v.add(new Victor(0,-30));
 
-	//left mouse - bullet
-	if(e.button === 0){
-//		console.log("LEFT MOUSE CLICK!");
-		this.addBullet(v, new Victor(missile_power / 2, missile_power / 2).rotate(gunAngle));
-	}
-	//right mouse - laser beam
-	else{
-		// TODO: what of middle mouse clicks?
-		console.log("RIGHT MOUSE CLICK!");
-		this.shootLaser();
-	}
-//	console.log(v);
-//	console.log(this.mouse);
+    //left mouse - bullet
+    if(e.button === 0){
+//        console.log("LEFT MOUSE CLICK!");
+        this.addBullet(v, new Victor(missile_power / 2, missile_power / 2).rotate(gunAngle));
+    }
+    //right mouse - laser beam
+    else{
+        // TODO: what of middle mouse clicks?
+        console.log("RIGHT MOUSE CLICK!");
+        this.shootLaser();
+    }
+//    console.log(v);
+//    console.log(this.mouse);
 
-	//do something with mouse position here
-	
-	return false;
-	
+    //do something with mouse position here
+    
+    return false;
+    
 }
 
 Game.prototype.handleMove = function(e) {
-	this.mouse = getMousePosition(e, this.ctx.canvas);
-	return false;
+    this.mouse = getMousePosition(e, this.ctx.canvas);
+    return false;
 }
 
 Game.prototype.handleContext = function(e) {
-	//console.log("Right Mouse CLICK!!!");
-	if (e.button === 2) {
-		e.preventDefault();
-		return false;
-	}
+    //console.log("Right Mouse CLICK!!!");
+    if (e.button === 2) {
+        e.preventDefault();
+        return false;
+    }
 }
 
 Game.prototype.finish = function() {
-	
+    
 }
 
 Game.prototype.step = function(currentTime, dt) {
-	if(this.level)
-		this.level.step(currentTime, dt);
-	this.gun.setAngle(this.mouse.clone().subtract(this.gunpos).angle() + Math.PI/2);
-	for (var i = 0; i < this.bullets.length; i++)
-		this.bullets[i].step(currentTime, dt);
-	for (var i = 0; i < this.fighters.length; i++)
-		this.fighters[i].step(currentTime, dt);
-	// check collisions
-	this.collisions.checkCollisions();
+    if(this.level)
+        this.level.step(currentTime, dt);
+    this.gun.setAngle(this.mouse.clone().subtract(this.gunpos).angle() + Math.PI/2);
+    for (var i = 0; i < this.bullets.length; i++)
+        this.bullets[i].step(currentTime, dt);
+    for (var i = 0; i < this.fighters.length; i++)
+        this.fighters[i].step(currentTime, dt);
+    // check collisions
+    this.collisions.checkCollisions();
 }
 
 Game.prototype.playLevel = function(level) {
-	this.level = level;
+    this.level = level;
 }
 
 function init() {
-	// Everything is so nice and highly abstracted now
-	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext("2d");
-	
-	var game = new Game(ctx);
-	var marathon = new MarathonLevel(game);
-	
-	var images = [new Image()];
-	images[0].src = './40px_Moon.png';
-	
-	var media = [
-		new Audio(), 
-		new Audio(), 
-		new Audio(), 
-		new Audio()];
-	media[0].src = 'theme1.ogg';
-	media[1].src = 'blaster.ogg';
-	media[2].src = 'ambient.ogg';
-	media[3].src = 'torpedo.ogg';
-	
-	var playScreen = new PlayScreen(ctx, game);
-	var menuScreen = new MenuScreen(ctx);
-	var splashScreen = new SplashScreen(ctx, 3, menuScreen);
-	var loadScreen = new LoadScreen(
-		ctx, images, media, splashScreen);
-	
-	// Add a play button to the menuScreen
-	menuScreen.addOption(
-		new Victor(200, 300), 
-		new BoundingBox(100, 20), 
-		function() {
-			menuScreen.close();
-			game.playLevel(marathon);
-			playScreen.open();
-		});
-	
-	loadScreen.open();
+    // Everything is so nice and highly abstracted now
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    
+    var game = new Game(ctx);
+    var marathon = new MarathonLevel(game);
+    
+    var images = [new Image()];
+    images[0].src = './40px_Moon.png';
+    
+    var media = [
+        new Audio(), 
+        new Audio(), 
+        new Audio(), 
+        new Audio()];
+    media[0].src = 'theme1.ogg';
+    media[1].src = 'blaster.ogg';
+    media[2].src = 'ambient.ogg';
+    media[3].src = 'torpedo.ogg';
+    
+    var playScreen = new PlayScreen(ctx, game);
+    var menuScreen = new MenuScreen(ctx);
+    var splashScreen = new SplashScreen(ctx, 3, menuScreen);
+    var loadScreen = new LoadScreen(
+        ctx, images, media, splashScreen);
+    
+    // Add a play button to the menuScreen
+    menuScreen.addOption(
+        new Victor(200, 300), 
+        new BoundingBox(100, 20), 
+        function() {
+            menuScreen.close();
+            game.playLevel(marathon);
+            playScreen.open();
+        });
+    
+    loadScreen.open();
 }
 
 $('document').ready(init);
-	</script>
+    </script>
 </html>
