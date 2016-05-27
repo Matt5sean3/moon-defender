@@ -3,8 +3,8 @@
 // sort of governs the game object
 // Contains information about when fighters are supposed to spawn
 function Level(game, info) {
-    this.data = (info == undefined)? 0: info; // should contain a large array
-    this.game = (game == undefined)? null: game;
+    this.data = (info === undefined)? 0: info; // should contain a large array
+    this.game = (game === undefined)? null: game;
     this.prevDelay = 0;
     this.prevIndex = 0;
 }

@@ -1,10 +1,9 @@
 "use strict";
 
-function LoadScreen(ctx, images, media, renderFunction, nextScreen) {
+function LoadScreen(ctx, images, media, nextScreen) {
     Screen.call(this, ctx);
     this.images = images;
     this.media = media;
-    this.render = renderFunction;
     this.next = nextScreen;
 }
 
@@ -28,7 +27,7 @@ LoadScreen.prototype.draw = function(currentTime) {
     }
 }
 
-function renderLoadScreen(ctx, fraction, currentTime, dt) {
+LoadScreen.prototype.render = function(ctx, fraction, currentTime, dt) {
     // placeholder
     ctx.save();
     ctx.font = "20px Arial";

@@ -306,15 +306,14 @@ function init() {
 	media[3].src = 'torpedo.ogg';
 	
 	var playScreen = new PlayScreen(ctx, game);
-	var menuScreen = new MenuScreen(ctx, renderMenu);
-	var splashScreen = new SplashScreen(ctx, renderSplash, 3, menuScreen);
+	var menuScreen = new MenuScreen(ctx);
+	var splashScreen = new SplashScreen(ctx, 3, menuScreen);
 	var loadScreen = new LoadScreen(
-		ctx, images, media, renderLoadScreen, splashScreen);
+		ctx, images, media, splashScreen);
 	
 	// Add a play button to the menuScreen
 	menuScreen.addOption(
 		new Victor(200, 300), 
-		renderPlayButton,
 		new BoundingBox(100, 20), 
 		function() {
 			menuScreen.close();
