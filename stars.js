@@ -5,7 +5,7 @@ var stars = [];
 var fps = 50;
 var numStars = 200;
 
-$('document').ready(function() {
+window.addEventListener("load", function() {
 
     // Calculate the screen size
     screenH = 600;
@@ -31,7 +31,7 @@ $('document').ready(function() {
     }
 
     
-});
+}, false);
 
 /**
  * Animate the canvas
@@ -41,9 +41,11 @@ $('document').ready(function() {
     
 function animate(con, currentTime) {
     con.save();
-    $.each(stars, function() {
-        this.draw(con, currentTime);
-    });
+    
+    for(var i = 0; i < stars.length; i++) {
+        stars[i].draw(con, currentTime);
+    }
+
     con.restore();
 }
 
