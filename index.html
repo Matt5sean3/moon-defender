@@ -29,7 +29,6 @@
         }
     </style>
     <script type="text/javascript" src="js/lib/victor.min.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="js/shims.js"></script>
     
     <script type="text/javascript" src="js/entities.js"></script>
@@ -324,6 +323,7 @@ function init() {
     loadScreen.open();
 }
 
-$('document').ready(init);
+window.addEventListener("load", init, false);
+
     </script>
 </html>
