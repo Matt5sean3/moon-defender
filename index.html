@@ -13,7 +13,7 @@
         }
         @font-face {
                 font-family: 'joystix';
-                src: url('joystix_monospace.ttf');
+                src: url('resources/joystix_monospace.ttf');
         }
         #canvas {
             position: absolute;
@@ -25,27 +25,27 @@
             width: 800px;
             height: 600px;
             margin: auto;
-            cursor: url("crosshair.ico"),default;
+            cursor: url("resources/crosshair.ico"),default;
         }
     </style>
-    <script type="text/javascript" src="victor.min.js"></script>
-    <script type="text/javascript" src="shims.js"></script>
+    <script type="text/javascript" src="js/lib/victor.min.js"></script>
+    <script type="text/javascript" src="js/shims.js"></script>
     
-    <script type="text/javascript" src="entities.js"></script>
-    <script type="text/javascript" src="collisions.js"></script>
-    <script type="text/javascript" src="mass.js"></script>
+    <script type="text/javascript" src="js/entities.js"></script>
+    <script type="text/javascript" src="js/collisions.js"></script>
+    <script type="text/javascript" src="js/mass.js"></script>
     
-    <script type="text/javascript" src="screen.js"></script>
-    <script type="text/javascript" src="loadscreen.js"></script>
-    <script type="text/javascript" src="splash.js"></script>
-    <script type="text/javascript" src="menu.js"></script>
-    <script type="text/javascript" src="level.js"></script>
+    <script type="text/javascript" src="js/screen.js"></script>
+    <script type="text/javascript" src="js/loadscreen.js"></script>
+    <script type="text/javascript" src="js/splash.js"></script>
+    <script type="text/javascript" src="js/menu.js"></script>
+    <script type="text/javascript" src="js/level.js"></script>
     
-    <script type="text/javascript" src="stars.js"></script>
-    <script type="text/javascript" src="gun.js"></script>
-    <script type="text/javascript" src="moon.js"></script>
-    <script type="text/javascript" src="bullet.js"></script>
-    <script type="text/javascript" src="fighter.js"></script>
+    <script type="text/javascript" src="js/stars.js"></script>
+    <script type="text/javascript" src="js/gun.js"></script>
+    <script type="text/javascript" src="js/moon.js"></script>
+    <script type="text/javascript" src="js/bullet.js"></script>
+    <script type="text/javascript" src="js/fighter.js"></script>
     <!--<script type="text/javascript" src="lib/impact/impact.js"></script>
     ##<script type="text/javascript" src="lib/game/main.js"></script>-->
     
@@ -116,19 +116,19 @@ function Game(ctx) {
     
     // more game resources
     this.moon_img = new Image();
-    this.moon_img.src = './40px_Moon.png';
+    this.moon_img.src = 'resources/40px_Moon.png';
     
     this.theme_audio = new Audio();
-    this.theme_audio.src = 'theme1.ogg';
+    this.theme_audio.src = 'resources/theme1.ogg';
     
     this.blaster_audio = new Audio();
-    this.blaster_audio.src = 'blaster.ogg';
+    this.blaster_audio.src = 'resources/blaster.ogg';
     
     this.ambient_audio = new Audio();
-    this.ambient_audio.src = 'ambient.ogg';
+    this.ambient_audio.src = 'resources/ambient.ogg';
     
     this.torpedo_audio = new Audio();
-    this.torpedo_audio.src = 'torpedo.ogg';
+    this.torpedo_audio.src = 'resources/torpedo.ogg';
     
     this.level = null;
 }
@@ -292,17 +292,17 @@ function init() {
     var marathon = new MarathonLevel(game);
     
     var images = [new Image()];
-    images[0].src = './40px_Moon.png';
+    images[0].src = 'resources/40px_Moon.png';
     
     var media = [
         new Audio(), 
         new Audio(), 
         new Audio(), 
         new Audio()];
-    media[0].src = 'theme1.ogg';
-    media[1].src = 'blaster.ogg';
-    media[2].src = 'ambient.ogg';
-    media[3].src = 'torpedo.ogg';
+    media[0].src = 'resources/theme1.ogg';
+    media[1].src = 'resources/blaster.ogg';
+    media[2].src = 'resources/ambient.ogg';
+    media[3].src = 'resources/torpedo.ogg';
     
     var playScreen = new PlayScreen(ctx, game);
     var menuScreen = new MenuScreen(ctx);
