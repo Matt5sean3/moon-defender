@@ -46,9 +46,6 @@
     <script type="text/javascript" src="js/moon.js"></script>
     <script type="text/javascript" src="js/bullet.js"></script>
     <script type="text/javascript" src="js/fighter.js"></script>
-    <!--<script type="text/javascript" src="lib/impact/impact.js"></script>
-    ##<script type="text/javascript" src="lib/game/main.js"></script>-->
-    
 
 </head>
 <body>
@@ -163,6 +160,17 @@ Game.prototype.addFighter = function(pos, vel) {
     var fighter = new Fighter(100, pos, vel);
     fighter.addGravity(this.moon);
     this.fighters.push(fighter);
+    for (var i = 0; i < this.bullets.length; i++) {
+        var bullet = this.bullets[i];
+        this.collisions.addCollisionEvent(
+            bullet,
+            fighter,
+            this.bulletCollideFighter.bind(this, bullet, fighter));
+    }
+    this.collisions.addCollisionEvent(
+        this.moon,
+        fighter,
+        this.fighterCollideMoon.bind(this, fighter, this.moon));
 }
 
 Game.prototype.cleanFighters = function(fighter) {
@@ -210,6 +218,16 @@ Game.prototype.bulletCollideFighter = function(bullet, fighter) {
     this.cleanFighters();
     // clean bullets
     this.cleanBullets();
+}
+
+Game.prototype.fighterCollideMoon = function(fighter, moon) {
+    console.log("Fighter landed!");
+    moon.damage(1);
+    fighter.destroy();
+    // clean collisions
+    this.collisions.clean();
+    // clean fighters
+    this.cleanFighters();
 }
 
 Game.prototype.shootLaser = function() {
