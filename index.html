@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta encoding="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Moon Defender</title>
     <style type="text/css">
         html,body {
@@ -30,6 +32,7 @@
     </style>
     <script type="text/javascript" src="js/lib/victor.min.js"></script>
     <script type="text/javascript" src="js/shims.js"></script>
+    <script type="text/javascript" src="js/bar.js"></script>
     
     <script type="text/javascript" src="js/entities.js"></script>
     <script type="text/javascript" src="js/collisions.js"></script>
@@ -55,7 +58,6 @@
 <script type="text/javascript">
 "use strict";
 
-
 // === START PLAY SCREEN
 function PlayScreen(ctx, game) {
     Screen.call(this, ctx);
@@ -66,6 +68,18 @@ function PlayScreen(ctx, game) {
     this.addCanvasHandler("mousedown", game.handleClick.bind(game));
     this.addCanvasHandler("mousemove", game.handleMove.bind(game));
     this.addCanvasHandler("contextmenu", game.handleContext.bind(game));
+
+    var width = ctx.canvas.width - 10;
+    var height = 20;
+    this.lifeBar = new Bar(new Victor(10, 10), new Victor(width, height));
+    this.lifeBar.setBorder("#DDDDDD", 3);
+    this.lifeBar.setFill("#00CC00");
+    this.lifeBar.getMax = (function() {
+        return this.game.moon.getMaxLife();
+    }).bind(this);
+    this.lifeBar.getCurrent = (function() {
+        return this.game.moon.getLife();
+    }).bind(this);
 }
 
 PlayScreen.prototype = new Screen();
@@ -78,7 +92,7 @@ PlayScreen.prototype.open = function() {
 PlayScreen.prototype.draw = function(currentTime) {
     Screen.prototype.draw.call(this, currentTime);
     // draw the background of stars
-    animate(this.ctx, this.elapsedTime / 1000); 
+    this.drawBackground();
     // update the play entities
     this.game.step(this.elapsedTime, this.dt);
     // draw the play entities
@@ -88,10 +102,25 @@ PlayScreen.prototype.draw = function(currentTime) {
 
     for(var i = 0; i < entities.length; i++)
         entities[i].draw(this.ctx);
-        
+
     this.ctx.restore();
+
+    // draw the HUD
+    this.drawHud();
     
+}
+
+PlayScreen.prototype.drawBackground = function() {
+    animate(this.ctx, this.elapsedTime / 1000);
+}
+
+PlayScreen.prototype.drawHud = function() {
+    // draw the lifebar of the moon
+    this.lifeBar.draw(this.ctx);
+
+    // Draw Moon Defender up in the left corner
     this.ctx.save();
+    this.ctx.fillStyle = "#FF0000";
     this.ctx.font = "24px joystix";
     this.ctx.fillText("Moon Defender", 10, 50);
     this.ctx.restore();
@@ -101,8 +130,8 @@ PlayScreen.prototype.draw = function(currentTime) {
 function Game(ctx) {
     this.ctx = ctx;
     
-    this.moon = new Moon(300000, new Victor(0, 0));
-    this.gun = new Gun(20, new Victor(0, -20), 0);
+    this.moon = null;
+    this.gun = null;
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
@@ -114,6 +143,9 @@ function Game(ctx) {
     // more game resources
     this.moon_img = new Image();
     this.moon_img.src = 'resources/40px_Moon.png';
+
+    this.gameover_img = new Image();
+    this.gameover_img.src = 'resources/gameover.png';
     
     this.theme_audio = new Audio();
     this.theme_audio.src = 'resources/theme1.ogg';
@@ -128,6 +160,17 @@ function Game(ctx) {
     this.torpedo_audio.src = 'resources/torpedo.ogg';
     
     this.level = null;
+
+    this.screen = null;
+    this.nextScreen = null;
+}
+
+Game.prototype.setScreen = function(screen) {
+    this.screen = screen;
+}
+
+Game.prototype.setNextScreen = function(screen) {
+    this.nextScreen = screen;
 }
 
 Game.prototype.getEntities = function() {
@@ -141,7 +184,7 @@ Game.prototype.getEntities = function() {
 
 Game.prototype.start = function() {
     // reset the stage
-    this.moon = new Moon(300000, new Victor(0, 0));
+    this.moon = new Moon(300000, new Victor(0, 0), 100, this.finish.bind(this));
     this.gun = new Gun(20, new Victor(0, -20), 0);
     this.bullets = [];
     this.fighters = [];
@@ -153,8 +196,18 @@ Game.prototype.start = function() {
     this.addFighter(new Victor(200, 200), new Victor(4, -1));
 
     this.theme_audio.loop = true;
+    this.theme_audio.currentTime = 0;
     this.theme_audio.play();
 }
+
+Game.prototype.finish = function() {
+    if(this.screen)
+        this.screen.close();
+    if(this.nextScreen)
+        this.nextScreen.open();
+    this.theme_audio.pause();
+}
+
 
 Game.prototype.addFighter = function(pos, vel) {
     var fighter = new Fighter(100, pos, vel);
@@ -281,10 +334,6 @@ Game.prototype.handleContext = function(e) {
     }
 }
 
-Game.prototype.finish = function() {
-    
-}
-
 Game.prototype.step = function(currentTime, dt) {
     if(this.level)
         this.level.step(currentTime, dt);
@@ -309,8 +358,9 @@ function init() {
     var game = new Game(ctx);
     var marathon = new MarathonLevel(game);
     
-    var images = [new Image()];
+    var images = [new Image(), new Image()];
     images[0].src = 'resources/40px_Moon.png';
+    images[1].src = 'resources/gameover.png';
     
     var media = [
         new Audio(), 
@@ -323,8 +373,19 @@ function init() {
     media[3].src = 'resources/torpedo.ogg';
     
     var playScreen = new PlayScreen(ctx, game);
+    game.setScreen(playScreen);
+
     var menuScreen = new MenuScreen(ctx);
     var splashScreen = new SplashScreen(ctx, 3, menuScreen);
+    var gameoverScreen = new SplashScreen(ctx, 3, menuScreen);
+    gameoverScreen.image = images[1];
+
+    game.setNextScreen(gameoverScreen);
+
+    gameoverScreen.render = function(ctx, currentTime, dt) {
+        ctx.drawImage(this.image, 0, 0, 800, 600);
+    }
+
     var loadScreen = new LoadScreen(
         ctx, images, media, splashScreen);
     

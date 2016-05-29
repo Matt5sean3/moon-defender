@@ -17,9 +17,23 @@ Moon.prototype.draw = function(ctx) {
 }
 
 Moon.prototype.damage = function(amount) {
+    this.life -= amount;
     if(this.life <= 0) {
         this.destroy();
+        if(this.death)
+            this.death();
     }
+}
+
+Moon.prototype.getLife = function() {
+    if(this.life >= 0)
+        return this.life;
+    else
+        return 0;
+}
+
+Moon.prototype.getMaxLife = function() {
+    return this.max_life;
 }
 
 Moon.prototype.render = function(ctx) {
