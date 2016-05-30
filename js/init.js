@@ -20,11 +20,15 @@ function init() {
         new Audio(), 
         new Audio(), 
         new Audio(), 
-        new Audio()];
+        new Audio(),
+        new XMLHttpRequest()];
     media[0].src = 'resources/theme1.ogg';
     media[1].src = 'resources/blaster.ogg';
     media[2].src = 'resources/ambient.ogg';
     media[3].src = 'resources/torpedo.ogg';
+    media[4].responseType = "json";
+    media[4].open('GET', 'resources/random_text.json', true);
+    media[4].send();
     
     var playScreen = new PlayScreen(ctx, game);
     game.setScreen(playScreen);
@@ -37,22 +41,58 @@ function init() {
     game.setNextScreen(gameoverScreen);
 
     splashScreen.image = images[2];
+    splashScreen.text_request = media[4];
+    splashScreen.open = function() {
+        SplashScreen.prototype.open.call(this);
+        var texts = this.text_request.response;
+        // 60 characters per line, 3 lines
+        this.text = texts[Math.floor(Math.random() * texts.length)];
+    }
     splashScreen.render = function(ctx, currentTime, dt) {
         ctx.save();
         ctx.fillStyle = "#999999";
         ctx.fillRect(0, 0, 800, 600);
         ctx.fillStyle = "#000000";
-        var presentText = "Presented By";
+
+        // Rather than just Created by
+        // Add text based on things from our #random slack channel
+        var presentText = "Created at";
+        // Flavor text gets loaded from a JSON file
+        var belowText = this.text;
+            
         
         ctx.drawImage(this.image, 0, 0, 800, 600);
 
+        // above text
         ctx.font = "40px joystix";
         ctx.textBaseline = "top";
+        ctx.textAlign = "center";
 
-        var metrics = ctx.measureText(presentText);
-        var widthOffset = metrics.width / 2;
+        ctx.fillText(presentText, 400, 40);
 
-        ctx.fillText(presentText, 400 - widthOffset, 40);
+        // below text
+        // Try wrapping the text if it's too long
+        ctx.font = "16px joystix";
+        ctx.textBaseline = "bottom";
+
+        var parts = belowText.split(" ");
+        var line = 0;
+        var lineText = [];
+        var maxLineLength = 60;
+        var lineLength = 0;
+        // Feels like this could be more elegant somehow
+        for(var i = 0; i < parts.length; i++) {
+          if(lineLength + parts[i].length + 1 > maxLineLength) {
+            ctx.fillText(lineText.join(" "), 400, 550 + 16 * line);
+            lineText = [];
+            lineLength = 0;
+            line += 1;
+          }
+          lineText.push(parts[i]);
+          lineLength += 1 + parts[i].length;
+        }
+        ctx.fillText(lineText.join(" "), 400, 550 + 16 * line);
+
         ctx.restore();
     }
 
