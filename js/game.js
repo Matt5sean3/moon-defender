@@ -65,9 +65,6 @@ Game.prototype.start = function() {
     
     this.gunpos = Victor((canvas.width/2)-10,(canvas.height/2)-51);
     
-    // add the test fighter
-    this.addFighter(new Victor(200, 200), new Victor(4, -1));
-
     this.theme_audio.loop = true;
     this.theme_audio.currentTime = 0;
     this.theme_audio.play();

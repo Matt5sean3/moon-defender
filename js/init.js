@@ -34,7 +34,8 @@ function init() {
     game.setScreen(playScreen);
 
     var menuScreen = new MenuScreen(ctx);
-    var splashScreen = new SplashScreen(ctx, 3, menuScreen);
+    var splashScreen = new SplashScreen(ctx, 0, menuScreen);
+    // var splashScreen = new SplashScreen(ctx, 3, menuScreen);
     var gameoverScreen = new SplashScreen(ctx, 3, menuScreen);
     gameoverScreen.image = images[1];
 
@@ -112,6 +113,16 @@ function init() {
             game.playLevel(marathon);
             playScreen.open();
         });
+
+    menuScreen.addOption(
+        new TextButton(
+            new Victor(200, 350),
+            "Story Mode",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+                alert("Story Mode not implemented");
+            }));
     
     loadScreen.open();
 }
