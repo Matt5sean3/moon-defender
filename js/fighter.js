@@ -41,3 +41,4 @@ Fighter.prototype.render = function(ctx) {
     ctx.stroke();
     ctx.restore();
 }
+

@@ -188,7 +188,10 @@ Game.prototype.handleClick = function(e) {
     //do something with mouse position here
     
     return false;
-    
+}
+
+Game.prototype.hasNoFighters = function() {
+    return !this.fighters.length;
 }
 
 Game.prototype.handleMove = function(e) {
@@ -214,8 +217,12 @@ Game.prototype.step = function(currentTime, dt) {
         this.fighters[i].step(currentTime, dt);
     // check collisions
     this.collisions.checkCollisions();
+    if(this.level.won()) {
+        this.screen.close();
+    }
 }
 
 Game.prototype.playLevel = function(level) {
     this.level = level;
+    this.level.useGame(this);
 }

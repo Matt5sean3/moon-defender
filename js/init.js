@@ -6,8 +6,8 @@ function init() {
     var ctx = canvas.getContext("2d");
     
     var game = new Game(ctx);
-    var marathon = new MarathonLevel(game);
-    
+    var marathon = new MarathonLevel();
+
     var images = [
         new Image(), 
         new Image(), 
@@ -21,6 +21,7 @@ function init() {
         new Audio(), 
         new Audio(), 
         new Audio(),
+        new XMLHttpRequest(),
         new XMLHttpRequest()];
     media[0].src = 'resources/theme1.ogg';
     media[1].src = 'resources/blaster.ogg';
@@ -29,14 +30,28 @@ function init() {
     media[4].responseType = "json";
     media[4].open('GET', 'resources/random_text.json', true);
     media[4].send();
-    
+    media[5].responseType = "json";
+    media[5].open('GET', 'resources/level_one.json', true);
+    media[5].send();
+
     var playScreen = new PlayScreen(ctx, game);
     game.setScreen(playScreen);
 
     var menuScreen = new MenuScreen(ctx);
-    var splashScreen = new SplashScreen(ctx, 0, menuScreen);
-    // var splashScreen = new SplashScreen(ctx, 3, menuScreen);
+    // Allow just clicking through splash screens
+    var splashScreen = new SplashScreen(ctx, 3, menuScreen);
     var gameoverScreen = new SplashScreen(ctx, 3, menuScreen);
+    var levelOneScreen = new SplashScreen(ctx, 5, playScreen);
+    // create level one screen
+    levelOneScreen.render = function(ctx, currentTime, dt) {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "20px Arial";
+        ctx.fillText("Level One Intro Placeholder", 200, 200);
+    }
+    levelOneScreen.close = function() {
+        SplashScreen.prototype.close.call(this);
+        game.playLevel(new Level(media[5].response));
+    }
     gameoverScreen.image = images[1];
 
     game.setNextScreen(gameoverScreen);
@@ -106,13 +121,16 @@ function init() {
     
     // Add a play button to the menuScreen
     menuScreen.addOption(
-        new Victor(200, 300), 
-        new BoundingBox(100, 20), 
-        function() {
-            menuScreen.close();
-            game.playLevel(marathon);
-            playScreen.open();
-        });
+        new TextButton(
+            new Victor(200, 300), 
+            "Marathon Mode",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+                menuScreen.close();
+                game.playLevel(marathon);
+                playScreen.open();
+            }));
 
     menuScreen.addOption(
         new TextButton(
@@ -121,7 +139,8 @@ function init() {
             "24px joystix",
             "#CCCCCC",
             function() {
-                alert("Story Mode not implemented");
+                menuScreen.close();
+                levelOneScreen.open();
             }));
     
     loadScreen.open();

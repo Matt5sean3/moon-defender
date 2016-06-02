@@ -88,15 +88,9 @@ function TextButton(loc, text, font, style, event) {
 
 TextButton.prototype = new Button();
 
-var first = true;
 TextButton.prototype.measure = function(ctx) {
     // measure the text
     var metrics = ctx.measureText(this.text);
-    if(first) {
-        first = false;
-        for(var elem in metrics)
-            console.log(elem + ": " + metrics[elem]);
-    }
     var width = metrics.width;
     var height;
     // Only works with fonts with size specified in pixels

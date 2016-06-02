@@ -2,60 +2,63 @@
 
 // sort of governs the game object
 // Contains information about when fighters are supposed to spawn
-function Level(game, info) {
+function Level(info, game, victory) {
     this.data = (info === undefined)? 0: info; // should contain a large array
     this.game = (game === undefined)? null: game;
-    this.prevDelay = 0;
-    this.prevIndex = 0;
+    this.index = 0;
 }
 
 Level.prototype.useGame = function(game) {
-    
+    this.game = game; 
 }
 
 Level.prototype.reset = function() {
-    this.prevDelay = 0;
-    this.prevIndex = 0;
+    this.index = 0;
 }
 
 Level.prototype.step = function(currentTime, dt) {
-    for(; this.data[i].delay < currentTime  - this.prevDelay && 
-            this.finished(); this.prevIndex++) {
-        var entry = this.data[this.prevIndex];
-        this.prevDelay += entry.delay;
-        var radius = entry.radius;
+    for(; !this.finished() && this.data[this.index].time < currentTime; this.index++) {
+        var entry = this.data[this.index];
         var pos = new Victor(
             entry.position[0], 
             entry.position[1]);
         var vel = new Victor(
             entry.velocity[0],
             entry.velocity[1]);
-        this.game.addFighter();
+        this.game.addFighter(pos, vel);
     }
 }
 
 Level.prototype.finished = function() {
-    return this.prevIndex < this.data.length;
+    return this.index >= this.data.length;
+}
+
+Level.prototype.won = function() {
+    return this.finished() && this.game.hasNoFighters();
 }
 
 // A level that keeps spawning fighters ~900 pixels from the moon
-function MarathonLevel(game) {
-    Level.call(this, game, null);
+function MarathonLevel() {
+    Level.call(this);
 }
 
 MarathonLevel.prototype = new Level();
 
 MarathonLevel.prototype.step = function(currentTime, dt) {
-    // number of spawning fighters will grow logarithmically over time
-    if(currentTime > this.prevIndex) {
-        this.prevIndex++;
-        var nfighters = Math.floor(Math.log(this.prevIndex));
-        for(var i = 0; i < nfighters; i++)
+    // rate of spawning fighters should grow logarithmically
+    // integral(ln(x + 1)) == (x + 1) * ln(x + 1) - x
+    var num_spawned = (currentTime + 1) * Math.log(currentTime + 1) - currentTime;
+    if(num_spawned > this.index) {
+        var nfighters = num_spawned - this.index;
+        for(var i = 0; i < nfighters; i++) {
             this.generateFighter();
+            this.index++;
+        }
     }
 }
 
 MarathonLevel.prototype.generateFighter = function() {
+    // spawns the fighter at 450 pixels from the moon's center
     var angle = 2 * Math.PI * Math.random();
     var distance = 450;
     var velocity = 10;
