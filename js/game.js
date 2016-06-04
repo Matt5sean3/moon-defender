@@ -35,15 +35,20 @@ function Game(ctx) {
     this.level = null;
 
     this.screen = null;
-    this.nextScreen = null;
+    this.lossScreen = null;
+    this.wonScreen = null;
 }
 
 Game.prototype.setScreen = function(screen) {
     this.screen = screen;
 }
 
-Game.prototype.setNextScreen = function(screen) {
-    this.nextScreen = screen;
+Game.prototype.setLossScreen = function(screen) {
+    this.lossScreen = screen;
+}
+
+Game.prototype.setWinScreen = function(screen) {
+    this.winScreen = screen;
 }
 
 Game.prototype.getEntities = function() {
@@ -57,7 +62,7 @@ Game.prototype.getEntities = function() {
 
 Game.prototype.start = function() {
     // reset the stage
-    this.moon = new Moon(300000, new Victor(0, 0), 100, this.finish.bind(this));
+    this.moon = new Moon(300000, new Victor(0, 0), 100, this.lose.bind(this));
     this.gun = new Gun(20, new Victor(0, -20), 0);
     this.bullets = [];
     this.fighters = [];
@@ -70,11 +75,21 @@ Game.prototype.start = function() {
     this.theme_audio.play();
 }
 
-Game.prototype.finish = function() {
+Game.prototype.lose = function() {
+    console.log("LOST GAME!");
     if(this.screen)
         this.screen.close();
-    if(this.nextScreen)
-        this.nextScreen.open();
+    if(this.lossScreen)
+        this.lossScreen.open();
+    this.theme_audio.pause();
+}
+
+Game.prototype.win = function() {
+    console.log("WON LEVEL!");
+    if(this.screen)
+        this.screen.close();
+    if(this.winScreen)
+        this.winScreen.open();
     this.theme_audio.pause();
 }
 
@@ -217,9 +232,8 @@ Game.prototype.step = function(currentTime, dt) {
         this.fighters[i].step(currentTime, dt);
     // check collisions
     this.collisions.checkCollisions();
-    if(this.level.won()) {
-        this.screen.close();
-    }
+    if(this.level.won())
+        this.win();
 }
 
 Game.prototype.playLevel = function(level) {

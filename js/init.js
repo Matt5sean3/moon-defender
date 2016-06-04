@@ -22,17 +22,38 @@ function init() {
         new Audio(), 
         new Audio(),
         new XMLHttpRequest(),
+        new XMLHttpRequest(),
+        new XMLHttpRequest(),
+        new XMLHttpRequest(),
+        new XMLHttpRequest(),
+        new XMLHttpRequest(),
+        new XMLHttpRequest(),
+        new XMLHttpRequest(),
+        new XMLHttpRequest(),
+        new XMLHttpRequest(),
         new XMLHttpRequest()];
     media[0].src = 'resources/theme1.ogg';
     media[1].src = 'resources/blaster.ogg';
     media[2].src = 'resources/ambient.ogg';
     media[3].src = 'resources/torpedo.ogg';
-    media[4].responseType = "json";
-    media[4].open('GET', 'resources/random_text.json', true);
-    media[4].send();
-    media[5].responseType = "json";
-    media[5].open('GET', 'resources/level_one.json', true);
-    media[5].send();
+    var requests = [
+        "resources/random_text.json",
+        "resources/level_one.json",
+        "resources/level_two.json",
+        "resources/level_three.json",
+        "resources/level_four.json",
+        "resources/level_five.json",
+        "resources/level_six.json",
+        "resources/level_seven.json",
+        "resources/level_eight.json",
+        "resources/level_nine.json",
+        "resources/level_ten.json"];
+    var jsonStart = 4;
+    for(var c = jsonStart; c < media.length; c++) {
+        media[c].open("GET", requests[c - jsonStart], true);
+        media[c].responseType = "json";
+        media[c].send();
+    }
 
     var playScreen = new PlayScreen(ctx, game);
     game.setScreen(playScreen);
@@ -41,20 +62,40 @@ function init() {
     // Allow just clicking through splash screens
     var splashScreen = new SplashScreen(ctx, 3, menuScreen);
     var gameoverScreen = new SplashScreen(ctx, 3, menuScreen);
-    var levelOneScreen = new SplashScreen(ctx, 5, playScreen);
-    // create level one screen
-    levelOneScreen.render = function(ctx, currentTime, dt) {
+
+
+    // Use prototype well enough
+    function MainLevel(request, render) {
+        if(render !== undefined)
+            this.render = render;
+        this.level_request = request;
+    }
+    MainLevel.prototype = new SplashScreen(ctx, 5, playScreen);
+    MainLevel.prototype.game = game;
+    MainLevel.prototype.nextScreen = null;
+    MainLevel.prototype.render = function(ctx, currentTime, dt) {
         ctx.fillStyle = "#FFFFFF";
         ctx.font = "20px Arial";
-        ctx.fillText("Level One Intro Placeholder", 200, 200);
+        ctx.fillText("Level Intro Placeholder", 200, 200);
     }
-    levelOneScreen.close = function() {
+    MainLevel.prototype.close = function() {
         SplashScreen.prototype.close.call(this);
-        game.playLevel(new Level(media[5].response));
+        this.game.playLevel(new Level(this.level_request.response));
+        // Set the win screen
+        this.game.setWinScreen(this.nextScreen);
+    }
+
+    // We'll have ten levels for some reason
+    var levelScreens = new Array(10);
+    for(var c = 0; c < levelScreens.length; c++) {
+        levelScreens[c] = new MainLevel(media[5 + c]);
+    }
+    for(var c = 0; c < levelScreens.length - 1; c++) {
+        levelScreens[c].nextScreen = levelScreens[c + 1];
     }
     gameoverScreen.image = images[1];
 
-    game.setNextScreen(gameoverScreen);
+    game.setLossScreen(gameoverScreen);
 
     splashScreen.image = images[2];
     splashScreen.text_request = media[4];
@@ -140,7 +181,7 @@ function init() {
             "#CCCCCC",
             function() {
                 menuScreen.close();
-                levelOneScreen.open();
+                levelScreens[0].open();
             }));
     
     loadScreen.open();

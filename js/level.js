@@ -2,7 +2,7 @@
 
 // sort of governs the game object
 // Contains information about when fighters are supposed to spawn
-function Level(info, game, victory) {
+function Level(info, game) {
     this.data = (info === undefined)? 0: info; // should contain a large array
     this.game = (game === undefined)? null: game;
     this.index = 0;
@@ -17,7 +17,8 @@ Level.prototype.reset = function() {
 }
 
 Level.prototype.step = function(currentTime, dt) {
-    for(; !this.finished() && this.data[this.index].time < currentTime; this.index++) {
+    for(; !this.finished() &&
+            this.data[this.index].time < currentTime; this.index++) {
         var entry = this.data[this.index];
         var pos = new Victor(
             entry.position[0], 
