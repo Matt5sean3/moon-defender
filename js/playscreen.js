@@ -39,7 +39,7 @@ PlayScreen.prototype.draw = function(currentTime) {
     this.game.step(this.elapsedTime, this.dt);
     // draw the play entities
     this.ctx.save();
-    this.ctx.translate(this.ctx.canvas.width/2, this.ctx.canvas.height/2);
+    this.ctx.translate(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
     var entities = this.game.getEntities();
 
     for(var i = 0; i < entities.length; i++)

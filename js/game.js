@@ -2,6 +2,10 @@
 
 function Game(ctx) {
     this.ctx = ctx;
+
+    this.origin = new Victor(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
+    // Adjust the mouse position
+    this.crosshairAdjustment = new Victor(-10, -10);
     
     this.moon = null;
     this.gun = null;
@@ -9,8 +13,6 @@ function Game(ctx) {
     this.fighters = [];
     this.collisions = new CollisionGroup();
     
-    this.gunpos = Victor((canvas.width/2)-10,(canvas.height/2)-51);
-
     this.mouse = new Victor(0, 0);
     
     // more game resources
@@ -63,12 +65,10 @@ Game.prototype.getEntities = function() {
 Game.prototype.start = function() {
     // reset the stage
     this.moon = new Moon(300000, new Victor(0, 0), 100, this.lose.bind(this));
-    this.gun = new Gun(20, new Victor(0, -20), 0);
+    this.gun = new Gun(20, new Victor(0, -31), 0);
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
-    
-    this.gunpos = Victor((canvas.width/2)-10,(canvas.height/2)-51);
     
     this.theme_audio.loop = true;
     this.theme_audio.currentTime = 0;
@@ -174,11 +174,18 @@ Game.prototype.shootLaser = function() {
     this.blaster_audio.play();
 }
 
+Game.prototype.updateMouse = function(e) {
+    // Keep the mouse position in game coordinates
+    // needs to account for the 
+    this.mouse = getMousePosition(e, this.ctx.canvas).clone().subtract(this.crosshairAdjustment).subtract(this.origin);
+}
+
 Game.prototype.handleClick = function(e) {
     e.preventDefault();
 
     // again emulates offsetX and offsetY, need a shim function for this somewhere
-    this.mouse = getMousePosition(e, this.ctx.canvas);
+    this.updateMouse(e);
+
     var missile_power = 200;
     // create a new bullet
     
@@ -210,7 +217,7 @@ Game.prototype.hasNoFighters = function() {
 }
 
 Game.prototype.handleMove = function(e) {
-    this.mouse = getMousePosition(e, this.ctx.canvas);
+    this.updateMouse(e);
     return false;
 }
 
@@ -225,7 +232,7 @@ Game.prototype.handleContext = function(e) {
 Game.prototype.step = function(currentTime, dt) {
     if(this.level)
         this.level.step(currentTime, dt);
-    this.gun.setAngle(this.mouse.clone().subtract(this.gunpos).angle() + Math.PI/2);
+    this.gun.pointAt(this.mouse.clone());
     for (var i = 0; i < this.bullets.length; i++)
         this.bullets[i].step(currentTime, dt);
     for (var i = 0; i < this.fighters.length; i++)

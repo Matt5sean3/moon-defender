@@ -4,6 +4,8 @@ function Gun(mass, pos, angle) {
     this.angle = (angle === undefined) ? 0 : angle;
 }
 
+Gun.prototype = new Mass();
+
 Gun.prototype.setAngle = function(angle){
     this.angle = angle;
 }
@@ -12,7 +14,9 @@ Gun.prototype.getAngle = function() {
     return this.angle;
 }
 
-
+Gun.prototype.pointAt = function(pos) {
+    this.setAngle(pos.clone().subtract(this.pos).angle() + Math.PI / 2);
+}
 
 Gun.prototype.draw = function(ctx) {
     this.renderStand(ctx);
