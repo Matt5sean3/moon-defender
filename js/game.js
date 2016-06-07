@@ -65,7 +65,7 @@ Game.prototype.getEntities = function() {
 Game.prototype.start = function() {
     // reset the stage
     this.moon = new Moon(300000, new Victor(0, 0), 100, this.lose.bind(this));
-    this.gun = new Gun(20, new Victor(0, -31), 0);
+    this.gun = new Gun(20, new Victor(0, -20), 0);
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
@@ -128,8 +128,7 @@ Game.prototype.cleanBullets = function() {
         }
 }
 
-Game.prototype.addBullet = function(pos, vel) {
-    var bullet = new Bullet(5, pos, vel);
+Game.prototype.addBullet = function(bullet) {
     bullet.addGravity(this.moon);
     // add collision events between the bullet and all current fighters
     for (var i = 0; i < this.fighters.length; i++) {
@@ -189,14 +188,15 @@ Game.prototype.handleClick = function(e) {
     var missile_power = 200;
     // create a new bullet
     
-    var gunAngle = this.gun.getAngle() + Math.PI * 5 / 4;
-    var v = new Victor(10,10).rotate(gunAngle);
+    var gunAngle = this.gun.getAngle() + Math.PI;
+    var v = new Victor(0, 10 * Math.sqrt(2)).rotate(gunAngle);
     v.add(new Victor(0,-30));
 
     //left mouse - bullet
     if(e.button === 0){
 //        console.log("LEFT MOUSE CLICK!");
-        this.addBullet(v, new Victor(missile_power / 2, missile_power / 2).rotate(gunAngle));
+//        this.addBullet(new Bullet(5, v, new Victor(0, missile_power * Math.sqrt(2) / 2).rotate(gunAngle)));
+        this.addBullet(this.gun.shoot());
     }
     //right mouse - laser beam
     else{

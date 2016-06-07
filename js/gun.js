@@ -18,15 +18,30 @@ Gun.prototype.pointAt = function(pos) {
     this.setAngle(pos.clone().subtract(this.pos).angle() + Math.PI / 2);
 }
 
+Gun.prototype.shoot = function() {
+  // Generates a new bullet
+  var missile_power = 200;
+  var gunangle = this.angle + Math.PI;
+  return new Bullet(5,
+      new Victor(0, 10 * Math.sqrt(2)).rotate(gunangle).add(new Victor(0, -30)),
+      new Victor(0, missile_power * Math.sqrt(2) / 2).rotate(gunangle));
+}
+// 30 pixels to the center of the rotation point
+// The stand is nominally 10 px high and 20px from the center of the moon
+
 Gun.prototype.draw = function(ctx) {
+    ctx.save();
+    ctx.translate(this.pos.x, this.pos.y);
     this.renderStand(ctx);
+    ctx.translate(0, -10);
     this.renderTurret(ctx, this.angle);
+    ctx.restore();
 }
 
 Gun.prototype.renderStand = function(ctx) {
 // #layer1
     ctx.save();
-    ctx.translate(-10,-51);
+    ctx.translate(-10,-31);
     ctx.transform(1.000000, 0.000000, 0.000000, 1.000000, 242.924070, -158.196400);
     
 // #path1576
@@ -151,6 +166,7 @@ Gun.prototype.renderStand = function(ctx) {
 Gun.prototype.renderTurret = function(ctx, gunangle) {
     
     var turretcolor = 'rgb(255, 0, 0)';
+    ctx.translate(0, 10);
     
 // #g4208
     ctx.translate(-232.418380, 176.778286);
