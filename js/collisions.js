@@ -17,8 +17,8 @@ function BoundingBox(width, height) {
 BoundingBox.prototype = new BoundingShape();
 
 BoundingBox.prototype.check = function(relpos) {
-    return relpos.x > 0 && relpos.x < this.width &&
-        relpos.y > 0 && relpos.y < this.height;
+    return relpos.x() > 0 && relpos.x() < this.width &&
+        relpos.y() > 0 && relpos.y() < this.height;
 }
 
 function BoundingCircle(r) {
@@ -30,12 +30,12 @@ BoundingCircle.prototype = new BoundingShape();
 BoundingCircle.prototype.checkCollision = function(relpos, circle) {
     // needs to use right comparison based on each object's type
     var centerToCenter = circle.radius + this.radius;
-    return relpos.lengthSq() < centerToCenter * centerToCenter;
+    return relpos.radiusSq() < centerToCenter * centerToCenter;
 }
 
 // Checks whether a location is within a bounding circle
 BoundingCircle.prototype.check = function(relpos) {
-    return this.radius * this.radius > relpos.lengthSq()
+    return this.radius * this.radius > relpos.radiusSq()
 }
 
 function CollisionEvent(item1, item2, event) {
@@ -47,7 +47,7 @@ function CollisionEvent(item1, item2, event) {
 CollisionEvent.prototype = new Object();
 
 CollisionEvent.prototype.check = function() {
-    var relpos = this.item1.pos.clone().subtract(this.item2.pos);
+    var relpos = this.item1.getPosition().subtract(this.item2.getPosition());
     if(this.item1.bbox.checkCollision(relpos, this.item2.bbox))
         this.event();
 }

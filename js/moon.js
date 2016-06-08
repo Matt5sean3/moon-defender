@@ -1,7 +1,7 @@
 "use strict";
 
 function Moon(mass, pos, max_life, death_event) {
-    Mass.call(this, mass, pos, new Victor(0, 0), new BoundingCircle(20));
+    Mass.call(this, mass, pos, Vector.create(0, 0), new BoundingCircle(20));
     this.life = max_life;
     this.max_life = max_life;
     this.death = death_event;
@@ -11,7 +11,7 @@ Moon.prototype = new Mass();
 
 Moon.prototype.draw = function(ctx) {
     ctx.save();
-    ctx.translate(this.pos.x, this.pos.y);
+    ctx.translate(this.pos.x(), this.pos.y());
     this.render(ctx);
     ctx.restore();
 }

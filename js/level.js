@@ -20,13 +20,9 @@ Level.prototype.step = function(currentTime, dt) {
     for(; !this.finished() &&
             this.data[this.index].time < currentTime; this.index++) {
         var entry = this.data[this.index];
-        var pos = new Victor(
-            entry.position[0], 
-            entry.position[1]);
-        var vel = new Victor(
-            entry.velocity[0],
-            entry.velocity[1]);
-        this.game.addFighter(pos, vel);
+        this.game.addFighter(
+            Vector.create.apply(Vector, entry.position), 
+            Vector.create.apply(Vector, entry.velocity));
     }
 }
 
@@ -63,15 +59,12 @@ MarathonLevel.prototype.generateFighter = function() {
     var angle = 2 * Math.PI * Math.random();
     var distance = 450;
     var velocity = 10;
-    var pos = new Victor(
-        distance * Math.sin(angle), 
-        distance * Math.cos(angle));
-    var vel = new Victor(
-        -velocity * Math.sin(angle), 
-        -velocity * Math.cos(angle));
-    this.game.addFighter(pos, vel);
+    this.game.addFighter(
+        PolarVector.create(angle, distance), 
+        PolarVector.create(angle, -velocity));
 }
 
 MarathonLevel.prototype.finished = function() {
     return false;
 }
+

@@ -13,7 +13,7 @@ function PlayScreen(ctx, game) {
 
     var width = ctx.canvas.width - 10;
     var height = 20;
-    this.lifeBar = new Bar(new Victor(10, 10), new Victor(width, height));
+    this.lifeBar = new Bar(Vector.create(10, 10), Vector.create(width, height));
     this.lifeBar.setBorder("#DDDDDD", 3);
     this.lifeBar.setFill("#00CC00");
     this.lifeBar.getMax = (function() {
