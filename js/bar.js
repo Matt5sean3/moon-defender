@@ -37,26 +37,26 @@ Bar.prototype.draw = function(ctx) {
     if(this.backColor) {
         ctx.fillStyle = this.backColor;
         ctx.fillRect(
-            this.pos.x, 
-            this.pos.y, 
-            this.size.x, 
-            this.size.y);
+            this.pos.x(), 
+            this.pos.y(), 
+            this.size.x(), 
+            this.size.y());
     }
     if(this.fillColor) {
         ctx.fillStyle = this.fillColor;
         ctx.fillRect(
-            this.pos.x, 
-            this.pos.y, 
-            this.size.x * this.getCurrent() / this.getMax(), 
-            this.size.y);
+            this.pos.x(), 
+            this.pos.y(), 
+            this.size.x() * this.getCurrent() / this.getMax(), 
+            this.size.y());
     }
     if(this.borderColor && this.borderWidth) {
         ctx.strokeStyle = this.borderColor;
         ctx.strokeRect(
-            this.pos.x, 
-            this.pos.y, 
-            this.size.x, 
-            this.size.y);
+            this.pos.x(), 
+            this.pos.y(), 
+            this.size.x(), 
+            this.size.y());
     }
     ctx.restore();
 }

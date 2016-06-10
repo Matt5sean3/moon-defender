@@ -8,7 +8,7 @@ Fighter.prototype = new Mass();
 
 Fighter.prototype.draw = function(ctx) {
     ctx.save();
-    ctx.translate(this.pos.x, this.pos.y);
+    ctx.translate(this.pos.x(), this.pos.y());
     ctx.rotate(this.vel.angle()+Math.PI/2);
     this.render(ctx);
     ctx.restore();

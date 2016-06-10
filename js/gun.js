@@ -1,6 +1,6 @@
 
 function Gun(mass, pos, angle) {
-    Mass.call(this, mass, pos, new Victor(0,0), new BoundingCircle(10));
+    Mass.call(this, mass, pos, Vector.create(0,0), new BoundingCircle(10));
     this.angle = (angle === undefined) ? 0 : angle;
 }
 
@@ -15,23 +15,23 @@ Gun.prototype.getAngle = function() {
 }
 
 Gun.prototype.pointAt = function(pos) {
-    this.setAngle(pos.clone().subtract(this.pos).angle() + Math.PI / 2);
+    this.setAngle(pos.subtract(this.pos).angle() + Math.PI / 2);
 }
 
 Gun.prototype.shoot = function() {
   // Generates a new bullet
   var missile_power = 200;
-  var gunangle = this.angle + Math.PI;
+  var gunangle = this.angle - Math.PI / 2;
   return new Bullet(5,
-      new Victor(0, 10 * Math.sqrt(2)).rotate(gunangle).add(new Victor(0, -30)),
-      new Victor(0, missile_power * Math.sqrt(2) / 2).rotate(gunangle));
+      PolarVector.create(gunangle, 10 * Math.sqrt(2)).addY(-30),
+      PolarVector.create(gunangle, missile_power / Math.sqrt(2)));
 }
 // 30 pixels to the center of the rotation point
 // The stand is nominally 10 px high and 20px from the center of the moon
 
 Gun.prototype.draw = function(ctx) {
     ctx.save();
-    ctx.translate(this.pos.x, this.pos.y);
+    ctx.translate(this.pos.x(), this.pos.y());
     this.renderStand(ctx);
     ctx.translate(0, -10);
     this.renderTurret(ctx, this.angle);

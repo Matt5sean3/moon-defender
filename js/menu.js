@@ -57,14 +57,13 @@ Button.prototype = new Object();
 
 Button.prototype.draw = function(ctx, currentTime, dt) {
     ctx.save();
-    ctx.translate(this.loc.x, this.loc.y);
+    ctx.translate(this.loc.x(), this.loc.y());
     this.render(ctx, currentTime, dt);
     ctx.restore();
 }
 
 Button.prototype.check = function(loc) {
-    var diffloc = loc.clone().subtract(this.loc);
-    if(this.bbox.check(diffloc))
+    if(this.bbox.check(loc.subtract(this.loc)))
         this.event();
 }
 

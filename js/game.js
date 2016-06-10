@@ -3,9 +3,9 @@
 function Game(ctx) {
     this.ctx = ctx;
 
-    this.origin = new Victor(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
+    this.origin = Vector.create(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
     // Adjust the mouse position
-    this.crosshairAdjustment = new Victor(-10, -10);
+    this.crosshairAdjustment = Vector.create(-10, -10);
     
     this.moon = null;
     this.gun = null;
@@ -13,7 +13,7 @@ function Game(ctx) {
     this.fighters = [];
     this.collisions = new CollisionGroup();
     
-    this.mouse = new Victor(0, 0);
+    this.mouse = Vector.create(0, 0);
     
     // more game resources
     this.moon_img = new Image();
@@ -64,11 +64,13 @@ Game.prototype.getEntities = function() {
 
 Game.prototype.start = function() {
     // reset the stage
-    this.moon = new Moon(300000, new Victor(0, 0), 100, this.lose.bind(this));
-    this.gun = new Gun(20, new Victor(0, -20), 0);
+    this.moon = new Moon(300000, Vector.create(0, 0), 100, this.lose.bind(this));
+    this.gun = new Gun(20, Vector.create(0, -20), 0);
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
+
+    this.addFighter(Vector.create(100, 50), Vector.create(0, 0));
     
     this.theme_audio.loop = true;
     this.theme_audio.currentTime = 0;
@@ -176,7 +178,7 @@ Game.prototype.shootLaser = function() {
 Game.prototype.updateMouse = function(e) {
     // Keep the mouse position in game coordinates
     // needs to account for the 
-    this.mouse = getMousePosition(e, this.ctx.canvas).clone().subtract(this.crosshairAdjustment).subtract(this.origin);
+    this.mouse = getMousePosition(e, this.ctx.canvas).subtract(this.crosshairAdjustment).subtract(this.origin);
 }
 
 Game.prototype.handleClick = function(e) {
@@ -189,16 +191,14 @@ Game.prototype.handleClick = function(e) {
     // create a new bullet
     
     var gunAngle = this.gun.getAngle() + Math.PI;
-    var v = new Victor(0, 10 * Math.sqrt(2)).rotate(gunAngle);
-    v.add(new Victor(0,-30));
+    var v = PolarVector.create(0, 10 * Math.sqrt(2)).rotate(gunAngle).addY(-30);
 
-    //left mouse - bullet
+    // left mouse - bullet
     if(e.button === 0){
 //        console.log("LEFT MOUSE CLICK!");
-//        this.addBullet(new Bullet(5, v, new Victor(0, missile_power * Math.sqrt(2) / 2).rotate(gunAngle)));
         this.addBullet(this.gun.shoot());
     }
-    //right mouse - laser beam
+    // right mouse - laser beam
     else{
         // TODO: what of middle mouse clicks?
         console.log("RIGHT MOUSE CLICK!");
@@ -232,7 +232,7 @@ Game.prototype.handleContext = function(e) {
 Game.prototype.step = function(currentTime, dt) {
     if(this.level)
         this.level.step(currentTime, dt);
-    this.gun.pointAt(this.mouse.clone());
+    this.gun.pointAt(this.mouse);
     for (var i = 0; i < this.bullets.length; i++)
         this.bullets[i].step(currentTime, dt);
     for (var i = 0; i < this.fighters.length; i++)
