@@ -74,7 +74,7 @@ Game.prototype.getEntities = function() {
 Game.prototype.start = function() {
     // reset the stage
     this.moon = new Moon(300000, Vector.create(0, 0), 100, this.lose.bind(this));
-    this.gun = new Gun(20, Vector.create(0, -20), 0);
+    this.gun = new Gun(20, Vector.create(0, -30), 0);
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
@@ -252,7 +252,7 @@ Game.prototype.handleKeyUp = function(e) {
     if(e.keyCode == this.cwKey)
         this.cw = false;
     if(e.keyCode == this.ccwKey)
-        this.ccw = true;
+        this.ccw = false;
 }
 
 Game.prototype.step = function(currentTime, dt) {
@@ -260,6 +260,8 @@ Game.prototype.step = function(currentTime, dt) {
         this.addBullet(this.gun.shoot(this.screen.elapsedTime));
     if(this.level)
         this.level.step(currentTime, dt);
+    if(this.cw || this.ccw)
+        this.gun.rotate(dt * (this.ccw - this.cw));
     this.gun.pointAt(this.mouse);
     for (var i = 0; i < this.bullets.length; i++)
         this.bullets[i].step(currentTime, dt);

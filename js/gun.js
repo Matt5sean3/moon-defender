@@ -5,6 +5,7 @@ function Gun(mass, pos, angle) {
     this.lastShotTime = 0.0;
     // 5 Hz by default
     this.firingPeriod = 0.2;
+    this.aim = Vector.create(0, 0);
 }
 
 Gun.prototype = new Mass();
@@ -17,7 +18,13 @@ Gun.prototype.getAngle = function() {
     return this.angle;
 }
 
+Gun.prototype.rotate = function(rotation) {
+    this.pos = this.pos.rotate(rotation);
+    this.pointAt(this.aim);
+}
+
 Gun.prototype.pointAt = function(pos) {
+    this.aim = pos;
     this.setAngle(pos.subtract(this.pos).angle() + Math.PI / 2);
 }
 
@@ -31,7 +38,7 @@ Gun.prototype.shoot = function(shotTime) {
     var missile_power = 200;
     var gunangle = this.angle - Math.PI / 2;
     return new Bullet(5,
-        PolarVector.create(gunangle, 10 * Math.sqrt(2)).addY(-30),
+        PolarVector.create(gunangle, 10 * Math.sqrt(2)).add(this.pos),
         PolarVector.create(gunangle, missile_power / Math.sqrt(2)));
 }
 
@@ -53,7 +60,8 @@ Gun.prototype.draw = function(ctx) {
 Gun.prototype.renderStand = function(ctx) {
 // #layer1
     ctx.save();
-    ctx.translate(-10,-31);
+    ctx.rotate(this.pos.angle() + Math.PI / 2);
+    ctx.translate(-10,-21);
     ctx.transform(1.000000, 0.000000, 0.000000, 1.000000, 242.924070, -158.196400);
     
 // #path1576
@@ -173,17 +181,19 @@ Gun.prototype.renderStand = function(ctx) {
     ctx.moveTo(-230.150780, 177.846560);
     ctx.lineTo(-226.776990, 187.395700);
     ctx.stroke();
+    ctx.restore();
 }
 
 Gun.prototype.renderTurret = function(ctx, gunangle) {
     
+    ctx.save();
     var turretcolor = 'rgb(255, 0, 0)';
     ctx.translate(0, 10);
     
+    ctx.translate(-10,-21);
+    ctx.transform(1.000000, 0.000000, 0.000000, 1.000000, 242.924070, -158.196400);
 // #g4208
     ctx.translate(-232.418380, 176.778286);
-    
-    
     
     ctx.rotate(gunangle);
     
