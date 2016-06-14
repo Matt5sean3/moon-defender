@@ -4,12 +4,12 @@
 function PlayScreen(ctx, game) {
     Screen.call(this, ctx);
     this.game = game;
-    this.clickHanlder = game.handleClick.bind(game);
-    this.moveHandler = game.handleMove.bind(game);
-    this.contextHandler = game.handleContext.bind(game);
-    this.addCanvasHandler("mousedown", game.handleClick.bind(game));
-    this.addCanvasHandler("mousemove", game.handleMove.bind(game));
-    this.addCanvasHandler("contextmenu", game.handleContext.bind(game));
+    this.addHandler(ctx.canvas, "mousedown", game.handleMouseDown.bind(game));
+    this.addHandler(ctx.canvas, "mouseup", game.handleMouseUp.bind(game));
+    this.addHandler(ctx.canvas, "mousemove", game.handleMove.bind(game));
+    this.addHandler(ctx.canvas, "contextmenu", game.handleContext.bind(game));
+    this.addHandler(window, "keydown", game.handleKeyDown.bind(game));
+    this.addHandler(window, "keyup", game.handleKeyUp.bind(game));
 
     var width = ctx.canvas.width - 10;
     var height = 20;

@@ -33,8 +33,8 @@ function Screen(ctx) {
 
 Screen.prototype = new Object();
 
-Screen.prototype.addCanvasHandler = function(event_name, handler) {
-    this.handlers.push(new CanvasHandler(event_name, handler));
+Screen.prototype.addHandler = function(object, event_name, handler) {
+    this.handlers.push(new Handler(object, event_name, handler));
 }
 
 Screen.prototype.draw = function(currentTime) {
@@ -75,15 +75,16 @@ Screen.prototype.unpause = function() {
         this.handlers[i].enable(this.ctx.canvas);
 }
 
-function CanvasHandler(name, event) {
+function Handler(object, name, event) {
+    this.object = object;
     this.name = name;
     this.event = event;
 }
 
-CanvasHandler.prototype.enable = function(canvas) {
-    canvas.addEventListener(this.name, this.event, false);
+Handler.prototype.enable = function() {
+    this.object.addEventListener(this.name, this.event, false);
 }
 
-CanvasHandler.prototype.disable = function(canvas) {
-    canvas.removeEventListener(this.name, this.event);
+Handler.prototype.disable = function(canvas) {
+    this.object.removeEventListener(this.name, this.event);
 }

@@ -2,6 +2,9 @@
 function Gun(mass, pos, angle) {
     Mass.call(this, mass, pos, Vector.create(0,0), new BoundingCircle(10));
     this.angle = (angle === undefined) ? 0 : angle;
+    this.lastShotTime = 0.0;
+    // 5 Hz by default
+    this.firingPeriod = 0.2;
 }
 
 Gun.prototype = new Mass();
@@ -18,13 +21,22 @@ Gun.prototype.pointAt = function(pos) {
     this.setAngle(pos.subtract(this.pos).angle() + Math.PI / 2);
 }
 
-Gun.prototype.shoot = function() {
-  // Generates a new bullet
-  var missile_power = 200;
-  var gunangle = this.angle - Math.PI / 2;
-  return new Bullet(5,
-      PolarVector.create(gunangle, 10 * Math.sqrt(2)).addY(-30),
-      PolarVector.create(gunangle, missile_power / Math.sqrt(2)));
+Gun.prototype.reset = function() {
+    this.lastShotTime = 0;
+}
+
+Gun.prototype.shoot = function(shotTime) {
+    // Generates a new bullet
+    this.lastShotTime = shotTime;
+    var missile_power = 200;
+    var gunangle = this.angle - Math.PI / 2;
+    return new Bullet(5,
+        PolarVector.create(gunangle, 10 * Math.sqrt(2)).addY(-30),
+        PolarVector.create(gunangle, missile_power / Math.sqrt(2)));
+}
+
+Gun.prototype.ready = function(shotTime) {
+    return shotTime - this.lastShotTime >= this.firingPeriod;
 }
 // 30 pixels to the center of the rotation point
 // The stand is nominally 10 px high and 20px from the center of the moon

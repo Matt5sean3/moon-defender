@@ -39,6 +39,15 @@ function Game(ctx) {
     this.screen = null;
     this.lossScreen = null;
     this.wonScreen = null;
+
+    this.firingBullets = false;
+    this.lastBullet = 0;
+    this.bulletPeriod = 0.5;
+
+    this.ccwKey = "A".charCodeAt(0);
+    this.cwKey = "D".charCodeAt(0); 
+    this.ccw = false;
+    this.cw = false;
 }
 
 Game.prototype.setScreen = function(screen) {
@@ -147,7 +156,6 @@ Game.prototype.addBullet = function(bullet) {
 }
 
 Game.prototype.bulletCollideFighter = function(bullet, fighter) {
-    console.log("Fighter destroyed!");
     // destroy the bullet
     bullet.destroy();
     fighter.destroy();
@@ -160,7 +168,6 @@ Game.prototype.bulletCollideFighter = function(bullet, fighter) {
 }
 
 Game.prototype.fighterCollideMoon = function(fighter, moon) {
-    console.log("Fighter landed!");
     moon.damage(1);
     fighter.destroy();
     // clean collisions
@@ -181,7 +188,7 @@ Game.prototype.updateMouse = function(e) {
     this.mouse = getMousePosition(e, this.ctx.canvas).subtract(this.crosshairAdjustment).subtract(this.origin);
 }
 
-Game.prototype.handleClick = function(e) {
+Game.prototype.handleMouseDown = function(e) {
     e.preventDefault();
 
     // again emulates offsetX and offsetY, need a shim function for this somewhere
@@ -195,8 +202,7 @@ Game.prototype.handleClick = function(e) {
 
     // left mouse - bullet
     if(e.button === 0){
-//        console.log("LEFT MOUSE CLICK!");
-        this.addBullet(this.gun.shoot());
+        this.firingBullets = true;
     }
     // right mouse - laser beam
     else{
@@ -210,6 +216,12 @@ Game.prototype.handleClick = function(e) {
     //do something with mouse position here
     
     return false;
+}
+
+Game.prototype.handleMouseUp = function(e) {
+    if(e.button == 0) {
+        this.firingBullets = false;
+    }
 }
 
 Game.prototype.hasNoFighters = function() {
@@ -229,7 +241,23 @@ Game.prototype.handleContext = function(e) {
     }
 }
 
+Game.prototype.handleKeyDown = function(e) {
+    if(e.keyCode == this.cwKey)
+        this.cw = true;
+    if(e.keyCode == this.ccwKey)
+        this.ccw = true;
+}
+
+Game.prototype.handleKeyUp = function(e) {
+    if(e.keyCode == this.cwKey)
+        this.cw = false;
+    if(e.keyCode == this.ccwKey)
+        this.ccw = true;
+}
+
 Game.prototype.step = function(currentTime, dt) {
+    if(this.firingBullets && this.gun.ready(this.screen.elapsedTime))
+        this.addBullet(this.gun.shoot(this.screen.elapsedTime));
     if(this.level)
         this.level.step(currentTime, dt);
     this.gun.pointAt(this.mouse);

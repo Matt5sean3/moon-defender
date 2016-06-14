@@ -116,7 +116,6 @@ function init() {
         var presentText = "Created at";
         // Flavor text gets loaded from a JSON file
         var belowText = this.text;
-            
         
         ctx.drawImage(this.image, 0, 0, 800, 600);
 
