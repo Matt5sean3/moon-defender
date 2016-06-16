@@ -80,6 +80,10 @@ Game.prototype.start = function() {
     this.collisions = new CollisionGroup();
 
     this.addFighter(Vector.create(100, 50), Vector.create(0, 0));
+
+    this.firingBullets = false;
+    this.ccw = false;
+    this.cw = false;
     
     this.theme_audio.loop = true;
     this.theme_audio.currentTime = 0;
