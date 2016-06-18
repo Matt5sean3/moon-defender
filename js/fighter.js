@@ -17,16 +17,17 @@ Fighter.prototype.draw = function(ctx) {
 Fighter.prototype.render = function(ctx) {
 // #layer1
     ctx.save();
+    ctx.scale(2,2);
     ctx.transform(1.000000, 0.000000, 0.000000, 1.000000, -0.361287, -1042.136700);
-    
+
 // #path1474
     ctx.beginPath();
     ctx.lineJoin = 'round';
-    ctx.strokeStyle = 'rgb(237, 167, 1)';
+    ctx.strokeStyle = 'rgb(0,0,102)';
     ctx.lineCap = 'round';
     ctx.miterLimit = 4;
     ctx.lineWidth = 0.362000;
-    ctx.fillStyle = 'rgb(0, 0, 0)';
+    ctx.fillStyle = 'rgb(20,255,255)';
     ctx.moveTo(4.774027, 1050.079600);
     ctx.lineTo(5.019737, 1051.376400);
     ctx.bezierCurveTo(5.232283, 1051.493700, 5.490151, 1051.493700, 5.702697, 1051.376400);
@@ -41,4 +42,3 @@ Fighter.prototype.render = function(ctx) {
     ctx.stroke();
     ctx.restore();
 }
-
