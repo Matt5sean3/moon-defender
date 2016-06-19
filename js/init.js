@@ -59,6 +59,7 @@ function init() {
     game.setScreen(playScreen);
 
     var menuScreen = new MenuScreen(ctx);
+    var optionScreen = new MenuScreen(ctx);
     // Allow just clicking through splash screens
     var splashScreen = new SplashScreen(ctx, 3, menuScreen);
     var gameoverScreen = new SplashScreen(ctx, 3, menuScreen);
@@ -182,6 +183,64 @@ function init() {
                 menuScreen.close();
                 levelScreens[0].open();
             }));
+
+    menuScreen.addOption(
+        new TextButton(
+            Vector.create(200, 400),
+            "Options",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+                menuScreen.pause();
+                optionScreen.open();
+            }));
+
+    // not a very deep menu tree, so it's manually implemented
+    optionScreen.addOption(
+        new TextButton(
+            Vector.create(100, 100),
+            "Back",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+                optionScreen.close();
+                menuScreen.unpause();
+            }));
+
+    optionScreen.addOption(
+        new TextButton(
+            Vector.create(100, 150),
+            "Effects",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+                game.effects[0].play();
+            }));
+
+    optionScreen.addSlider(
+        Vector.create(100, 200), 
+        game.getEffectsVolume.bind(game),
+        game.setEffectsVolume.bind(game),
+        600,
+        50,
+        100);
+
+    optionScreen.addOption(
+        new TextButton(
+            Vector.create(100, 250),
+            "Music",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+            }));
+
+    optionScreen.addSlider(
+        Vector.create(100, 300),
+        game.getMusicVolume.bind(game),
+        game.setMusicVolume.bind(game),
+        600,
+        50,
+        100);
     
     loadScreen.open();
 }

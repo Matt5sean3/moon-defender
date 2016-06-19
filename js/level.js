@@ -5,11 +5,16 @@
 function Level(info, game) {
     this.data = (info === undefined)? 0: info; // should contain a large array
     this.game = (game === undefined)? null: game;
+    if(this.data != 0 && "life" in this.data)
+        this.max_life = this.data.life;
+    else
+        this.max_life = 10;
     this.index = 0;
 }
 
 Level.prototype.useGame = function(game) {
     this.game = game; 
+    this.game.setLife(this.max_life);
 }
 
 Level.prototype.reset = function() {
@@ -34,9 +39,11 @@ Level.prototype.won = function() {
     return this.finished() && this.game.hasNoFighters();
 }
 
-// A level that keeps spawning fighters ~900 pixels from the moon
+// A level that keeps spawning fighters 450 pixels from the moon
 function MarathonLevel() {
     Level.call(this);
+    // Start with a lot more life for the marathon
+    this.max_life = 100;
 }
 
 MarathonLevel.prototype = new Level();
