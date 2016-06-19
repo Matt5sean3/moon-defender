@@ -57,7 +57,7 @@ function Game(ctx) {
     this.cw = false;
 }
 
-Game.prototype.setMoonLife = function(v) {
+Game.prototype.setLife = function(v) {
     this.life = v;
 }
 
