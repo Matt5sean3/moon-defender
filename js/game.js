@@ -9,6 +9,7 @@ function Game(ctx) {
 
     this.moon = null;
     this.gun = null;
+    this.life = 10;
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
@@ -34,6 +35,12 @@ function Game(ctx) {
     this.torpedo_audio = new Audio();
     this.torpedo_audio.src = 'resources/torpedo.ogg';
 
+    this.music = [this.theme_audio];
+    this.effects = [
+        this.blaster_audio,
+        this.ambient_audio,
+        this.torpedo_audio];
+
     this.level = null;
 
     this.screen = null;
@@ -48,6 +55,50 @@ function Game(ctx) {
     this.cwKey = "D".charCodeAt(0);
     this.ccw = false;
     this.cw = false;
+}
+
+Game.prototype.setMoonLife = function(v) {
+    this.life = v;
+}
+
+Game.prototype.toggleEffects = function() {
+    for (var c = 0; c < this.effects.length; c++) {
+        this.effects[c].muted = !this.effects[c].muted;
+    }
+}
+
+Game.prototype.setEffectsVolume = function(level) {
+    for (var c = 0; c < this.effects.length; c++) {
+        this.effects[c].volume = level;
+    }
+}
+
+Game.prototype.getEffectsVolume = function() {
+    return this.effects[0].volume;
+}
+
+Game.prototype.hasEffects = function() {
+    return !this.effects[0].muted;
+}
+
+Game.prototype.toggleMusic = function() {
+    for (var c = 0; c < this.music.length; c++) {
+        this.music[c].muted = !this.music[c].muted;
+    }
+}
+
+Game.prototype.hasMusic = function() {
+    return !this.music[0].muted;
+}
+
+Game.prototype.setMusicVolume= function(level) {
+    for (var c = 0; c < this.music.length; c++) {
+        this.music[c].volume = level;
+    }
+}
+
+Game.prototype.getMusicVolume = function() {
+    return this.music[0].volume;
 }
 
 Game.prototype.setScreen = function(screen) {
@@ -73,7 +124,7 @@ Game.prototype.getEntities = function() {
 
 Game.prototype.start = function() {
     // reset the stage
-    this.moon = new Moon(300000, Vector.create(0, 0), 100, this.lose.bind(this));
+    this.moon = new Moon(300000, Vector.create(0, 0), this.life, this.lose.bind(this));
     this.gun = new Gun(20, Vector.create(0, -30), 0);
     this.bullets = [];
     this.fighters = [];
@@ -92,7 +143,6 @@ Game.prototype.start = function() {
 }
 
 Game.prototype.lose = function() {
-    console.log("LOST GAME!");
     if(this.screen)
         this.screen.close();
     if(this.lossScreen)
@@ -101,7 +151,6 @@ Game.prototype.lose = function() {
 }
 
 Game.prototype.win = function() {
-    console.log("WON LEVEL!");
     if(this.screen)
         this.screen.close();
     if(this.winScreen)
@@ -144,7 +193,6 @@ Game.prototype.cleanBullets = function() {
         }
 }
 Game.prototype.addLaserBeam = function(bullet){
-  //bullet.addGravity(this.moon)
   for (var i = 0; i < this.fighters.length; i++) {
       var fighter = this.fighters[i];
       this.collisions.addCollisionEvent(
@@ -227,10 +275,6 @@ Game.prototype.handleMouseDown = function(e) {
         this.firingBullets = true;
 
     }
-//    console.log(v);
-//    console.log(this.mouse);
-
-    //do something with mouse position here
 
     return false;
 }
@@ -253,7 +297,6 @@ Game.prototype.handleMove = function(e) {
 }
 
 Game.prototype.handleContext = function(e) {
-    //console.log("Right Mouse CLICK!!!");
     if (e.button === 2) {
         e.preventDefault();
         return false;
@@ -261,6 +304,14 @@ Game.prototype.handleContext = function(e) {
 }
 
 Game.prototype.handleKeyDown = function(e) {
+    if(e.keyCode == this.muteKey) {
+        if(this.hasMusic() == this.hasEffects()) {
+            this.toggleMusic();
+            this.toggleEffects();
+        } else {
+            this.toggleMusic();
+        }
+    }
     if(e.keyCode == this.cwKey)
         this.cw = true;
     if(e.keyCode == this.ccwKey)

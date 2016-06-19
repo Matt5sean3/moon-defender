@@ -21,6 +21,13 @@ BoundingBox.prototype.check = function(relpos) {
         relpos.y() > 0 && relpos.y() < this.height;
 }
 
+BoundingBox.prototype.draw = function(ctx) {
+    ctx.save();
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.strokeRect(0, 0, this.width, this.height);
+    ctx.restore();
+}
+
 function BoundingCircle(r) {
     this.radius = r;
 }
