@@ -14,6 +14,13 @@ function init() {
         new Image(),
         new Image(),
         new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
         new Image()
       ];
     images[0].src = 'resources/40px_Moon.png';
@@ -22,6 +29,13 @@ function init() {
     images[3].src = 'resources/cutScene1.png';
     images[4].src = 'resources/cutScene2.png';
     images[5].src = 'resources/cutScene3.png';
+    images[6].src = 'resources/cutScene4.png';
+    images[7].src = 'resources/cutScene5.png';
+    images[8].src = 'resources/cutScene6.png';
+    images[9].src = 'resources/cutScene7.png';
+    images[10].src = 'resources/cutScene8.png';
+    images[11].src = 'resources/cutScene9.png';
+    images[12].src = 'resources/cutScene10.png';
 
     var media = [
         new Audio(),
@@ -110,6 +124,13 @@ function init() {
     levelScreens[0].image = images[3];
     levelScreens[1].image = images[4];
     levelScreens[2].image = images[5];
+    levelScreens[3].image = images[6];
+    levelScreens[4].image = images[7];
+    levelScreens[5].image = images[8];
+    levelScreens[6].image = images[9];
+    levelScreens[7].image = images[10];
+    levelScreens[8].image = images[11];
+    levelScreens[9].image = images[12];
 
     game.setLossScreen(gameoverScreen);
 
