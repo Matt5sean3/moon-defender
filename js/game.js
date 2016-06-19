@@ -6,34 +6,43 @@ function Game(ctx) {
     this.origin = Vector.create(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
     // Adjust the mouse position
     this.crosshairAdjustment = Vector.create(-10, -10);
-    
+
     this.moon = null;
     this.gun = null;
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
-    
+
     this.mouse = Vector.create(0, 0);
-    
+
     // more game resources
     this.moon_img = new Image();
     this.moon_img.src = 'resources/40px_Moon.png';
 
     this.gameover_img = new Image();
     this.gameover_img.src = 'resources/gameover.png';
-    
+
+    this.gameover_img = new Image();
+    this.gameover_img.src = 'resources/cutScene1.png';
+
+    this.gameover_img = new Image();
+    this.gameover_img.src = 'resources/cutScene2.png';
+
+    this.gameover_img = new Image();
+    this.gameover_img.src = 'resources/cutScene2.png';
+
     this.theme_audio = new Audio();
     this.theme_audio.src = 'resources/theme1.ogg';
-    
+
     this.blaster_audio = new Audio();
     this.blaster_audio.src = 'resources/blaster.ogg';
-    
+
     this.ambient_audio = new Audio();
     this.ambient_audio.src = 'resources/ambient.ogg';
-    
+
     this.torpedo_audio = new Audio();
     this.torpedo_audio.src = 'resources/torpedo.ogg';
-    
+
     this.level = null;
 
     this.screen = null;
@@ -45,7 +54,7 @@ function Game(ctx) {
     this.bulletPeriod = 0.5;
 
     this.ccwKey = "A".charCodeAt(0);
-    this.cwKey = "D".charCodeAt(0); 
+    this.cwKey = "D".charCodeAt(0);
     this.ccw = false;
     this.cw = false;
 }
@@ -84,7 +93,7 @@ Game.prototype.start = function() {
     this.firingBullets = false;
     this.ccw = false;
     this.cw = false;
-    
+
     this.theme_audio.loop = true;
     this.theme_audio.currentTime = 0;
     this.theme_audio.play();
@@ -149,8 +158,8 @@ Game.prototype.addBullet = function(bullet) {
     for (var i = 0; i < this.fighters.length; i++) {
         var fighter = this.fighters[i];
         this.collisions.addCollisionEvent(
-            bullet, 
-            fighter, 
+            bullet,
+            fighter,
             this.bulletCollideFighter.bind(this, bullet, fighter));
     }
     this.bullets.push(bullet);
@@ -188,7 +197,7 @@ Game.prototype.shootLaser = function() {
 
 Game.prototype.updateMouse = function(e) {
     // Keep the mouse position in game coordinates
-    // needs to account for the 
+    // needs to account for the
     this.mouse = getMousePosition(e, this.ctx.canvas).subtract(this.crosshairAdjustment).subtract(this.origin);
 }
 
@@ -200,7 +209,7 @@ Game.prototype.handleMouseDown = function(e) {
 
     var missile_power = 200;
     // create a new bullet
-    
+
     var gunAngle = this.gun.getAngle() + Math.PI;
     var v = PolarVector.create(0, 10 * Math.sqrt(2)).rotate(gunAngle).addY(-30);
 
@@ -218,7 +227,7 @@ Game.prototype.handleMouseDown = function(e) {
 //    console.log(this.mouse);
 
     //do something with mouse position here
-    
+
     return false;
 }
 
