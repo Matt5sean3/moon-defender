@@ -5,9 +5,10 @@ function MenuScreen(ctx) {
     Screen.call(this, ctx);
     this.options = [];
     this.sliders = [];
-    this.clickHandler = this.handleClick.bind(this);
-    this.addHandler(ctx.canvas, "mousedown", this.handleClick.bind(this));
-    this.addHandler(ctx.canvas, "mouseup", this.handleLift.bind(this));
+    if(ctx !== undefined) {
+        this.addHandler(ctx.canvas, "mousedown", this.handleClick.bind(this));
+        this.addHandler(ctx.canvas, "mouseup", this.handleLift.bind(this));
+    }
 }
 
 MenuScreen.prototype = new Screen();
