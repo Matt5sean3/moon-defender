@@ -4,22 +4,43 @@ function init() {
     // Everything is so nice and highly abstracted now
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
-    
+
     var game = new Game(ctx);
     var marathon = new MarathonLevel();
 
     var images = [
-        new Image(), 
-        new Image(), 
-        new Image()];
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image(),
+        new Image()
+      ];
     images[0].src = 'resources/40px_Moon.png';
     images[1].src = 'resources/gameover.png';
     images[2].src = 'resources/hackrva.png';
-    
+    images[3].src = 'resources/cutScene1.png';
+    images[4].src = 'resources/cutScene2.png';
+    images[5].src = 'resources/cutScene3.png';
+    images[6].src = 'resources/cutScene4.png';
+    images[7].src = 'resources/cutScene5.png';
+    images[8].src = 'resources/cutScene6.png';
+    images[9].src = 'resources/cutScene7.png';
+    images[10].src = 'resources/cutScene8.png';
+    images[11].src = 'resources/cutScene9.png';
+    images[12].src = 'resources/cutScene10.png';
+
     var media = [
-        new Audio(), 
-        new Audio(), 
-        new Audio(), 
+        new Audio(),
+        new Audio(),
+        new Audio(),
         new Audio(),
         new XMLHttpRequest(),
         new XMLHttpRequest(),
@@ -77,7 +98,12 @@ function init() {
     MainLevel.prototype.render = function(ctx, currentTime, dt) {
         ctx.fillStyle = "#FFFFFF";
         ctx.font = "20px Arial";
-        ctx.fillText("Level Intro Placeholder", 200, 200);
+        if("image" in this){
+          ctx.drawImage(this.image,0,0,800,600);
+        }
+        else{
+          ctx.fillText("Level Intro Placeholder", 200, 200);
+        }
     }
     MainLevel.prototype.close = function() {
         SplashScreen.prototype.close.call(this);
@@ -95,6 +121,16 @@ function init() {
         levelScreens[c].nextScreen = levelScreens[c + 1];
     }
     gameoverScreen.image = images[1];
+    levelScreens[0].image = images[3];
+    levelScreens[1].image = images[4];
+    levelScreens[2].image = images[5];
+    levelScreens[3].image = images[6];
+    levelScreens[4].image = images[7];
+    levelScreens[5].image = images[8];
+    levelScreens[6].image = images[9];
+    levelScreens[7].image = images[10];
+    levelScreens[8].image = images[11];
+    levelScreens[9].image = images[12];
 
     game.setLossScreen(gameoverScreen);
 
@@ -117,7 +153,7 @@ function init() {
         var presentText = "Created at";
         // Flavor text gets loaded from a JSON file
         var belowText = this.text;
-        
+
         ctx.drawImage(this.image, 0, 0, 800, 600);
 
         // above text
@@ -159,11 +195,11 @@ function init() {
 
     var loadScreen = new LoadScreen(
         ctx, images, media, splashScreen);
-    
+
     // Add a play button to the menuScreen
     menuScreen.addOption(
         new TextButton(
-            Vector.create(200, 300), 
+            Vector.create(200, 300),
             "Marathon Mode",
             "24px joystix",
             "#CCCCCC",
@@ -183,6 +219,7 @@ function init() {
                 menuScreen.close();
                 levelScreens[0].open();
             }));
+
 
     menuScreen.addOption(
         new TextButton(
@@ -238,7 +275,7 @@ function init() {
             }));
 
     optionScreen.addSlider(
-        Vector.create(100, 200), 
+        Vector.create(100, 200),
         game.getEffectsVolume.bind(game),
         game.setEffectsVolume.bind(game),
         600,
@@ -268,9 +305,9 @@ function init() {
         600,
         50,
         100);
-    
+
+
     loadScreen.open();
 }
 
 window.addEventListener("load", init, false);
-
