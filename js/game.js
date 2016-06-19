@@ -53,6 +53,7 @@ function Game(ctx) {
 
     this.ccwKey = "A".charCodeAt(0);
     this.cwKey = "D".charCodeAt(0);
+    this.muteKey = "M".charCodeAt(0);
     this.ccw = false;
     this.cw = false;
 }
