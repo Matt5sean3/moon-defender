@@ -335,12 +335,22 @@ Game.prototype.step = function(currentTime, dt) {
         this.gun.rotate(dt * (this.ccw - this.cw));
     this.gun.pointAt(this.mouse);
     var entities = this.getEntities();
+    var killed_entity = false;
     for (var i = 0; i < entities.length; i++)
         if(!this.bounds.check(entities[i].getPosition().subtract(
                 Vector.create(-800, -600)))) {
             entities[i].destroy();
-            console.log("ENTITY OUT OF BOUNDS");
+            killed_entity = true;
         }
+    if (killed_entity) {
+        // clean collisions
+        this.collisions.clean();
+        // clean fighters
+        this.cleanFighters();
+        // clean bullets
+        this.cleanBullets();
+    }
+
     for (var i = 0; i < this.bullets.length; i++)
         this.bullets[i].step(currentTime, dt);
     for (var i = 0; i < this.fighters.length; i++)
