@@ -1,67 +1,92 @@
 [
   {
     "time": 1,
-    "position" : [300, 0],
+    "position" : [0, -300],
     "velocity" : [0, 0]
   },
   {
     "time": 2,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [150, -250],
+    "velocity" : [0, -2]
   },
   {
     "time": 3,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [200, -200],
+    "velocity" : [0, -3]
   },
   {
     "time": 4,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [250, -150],
+    "velocity" : [0, -4]
   },
   {
     "time": 5,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [300, -50],
+    "velocity" : [0, -5]
   },
   {
     "time": 6,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [300, 50],
+    "velocity" : [0, 5]
   },
   {
     "time": 7,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [250, 150],
+    "velocity" : [0, 4]
   },
   {
     "time": 8,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [200, 200],
+    "velocity" : [0, 3]
   },
   {
     "time": 9,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [150, 250],
+    "velocity" : [0, 2]
   },
   {
     "time": 10,
-    "position" : [300, 0],
+    "position" : [0, 300],
     "velocity" : [0, 0]
   },
   {
     "time": 11,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [-150, 250],
+    "velocity" : [0, 2]
   },
   {
     "time": 12,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [-200, 200],
+    "velocity" : [0, 3]
   },
   {
     "time": 13,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [-250, 150],
+    "velocity" : [0, 4]
+  },
+  {
+    "time": 14,
+    "position" : [-300, 50],
+    "velocity" : [0, 5]
+  },
+  {
+    "time": 15,
+    "position" : [-300, -50],
+    "velocity" : [0, 5]
+  },
+  {
+    "time": 16,
+    "position" : [-250, -150],
+    "velocity" : [0, 4]
+  },
+  {
+    "time": 17,
+    "position" : [-200, -200],
+    "velocity" : [0, 3]
+  },
+  {
+    "time": 17,
+    "position" : [-150, -250],
+    "velocity" : [0, 2]
   }
 ]
