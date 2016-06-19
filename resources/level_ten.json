@@ -52,12 +52,12 @@
   {
     "time": 1,
     "position" : [300, -200],
-    "velocity" : [50, 0]
+    "velocity" : [-50, 0]
   },
   {
     "time": 1,
     "position" : [300, -100],
-    "velocity" : [50, 0]
+    "velocity" : [-50, 0]
   },
   {
     "time": 1,
@@ -67,22 +67,22 @@
   {
     "time": 1,
     "position" : [300, 200],
-    "velocity" : [50, 0]
+    "velocity" : [-50, 0]
   },
   {
     "time": 1,
     "position" : [300, 100],
-    "velocity" : [50, 0]
+    "velocity" : [-50, 0]
   },
   {
     "time": 3,
     "position" : [200, -200],
-    "velocity" : [50, 0]
+    "velocity" : [-50, 0]
   },
   {
     "time": 3,
     "position" : [200, -100],
-    "velocity" : [50, 0]
+    "velocity" : [-50, 0]
   },
   {
     "time": 3,
@@ -92,11 +92,11 @@
   {
     "time": 3,
     "position" : [200, 200],
-    "velocity" : [50, 0]
+    "velocity" : [-50, 0]
   },
   {
     "time": 3,
     "position" : [200, 100],
-    "velocity" : [50, 0]
+    "velocity" : [-50, 0]
   }
 ]
