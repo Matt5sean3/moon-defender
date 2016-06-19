@@ -3,6 +3,9 @@
 // === START PLAY SCREEN
 function PlayScreen(ctx, game) {
     Screen.call(this, ctx);
+
+    this.pause_screen = new PauseScreen(ctx, this);
+
     this.game = game;
     this.addHandler(ctx.canvas, "mousedown", game.handleMouseDown.bind(game));
     this.addHandler(ctx.canvas, "mouseup", game.handleMouseUp.bind(game));
@@ -10,6 +13,8 @@ function PlayScreen(ctx, game) {
     this.addHandler(ctx.canvas, "contextmenu", game.handleContext.bind(game));
     this.addHandler(window, "keydown", game.handleKeyDown.bind(game));
     this.addHandler(window, "keyup", game.handleKeyUp.bind(game));
+    this.addHandler(window, "blur", 
+        this.pause_screen.open.bind(this.pause_screen));
 
     var width = ctx.canvas.width - 10;
     var height = 20;
@@ -68,3 +73,29 @@ PlayScreen.prototype.drawHud = function() {
     this.ctx.restore();
 }
 // === END PLAY SCREEN
+
+// The pause screen opens when "P" is pressed and when the window loses focus
+function PauseScreen(ctx, parent_screen) {
+    MenuScreen.call(this, ctx);
+    this.parent_screen = parent_screen;
+    this.addOption(
+        new TextButton(
+            Vector.create(300, 300),
+            "continue",
+            "24px joystix",
+            "#CCCCCC",
+            this.close.bind(this)));
+}
+
+PauseScreen.prototype = new MenuScreen();
+
+PauseScreen.prototype.open = function() {
+    MenuScreen.prototype.open.call(this);
+    this.parent_screen.pause();
+}
+
+PauseScreen.prototype.close = function() {
+    MenuScreen.prototype.close.call(this);
+    this.parent_screen.unpause();
+}
+

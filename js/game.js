@@ -54,6 +54,7 @@ function Game(ctx) {
     this.ccwKey = "A".charCodeAt(0);
     this.cwKey = "D".charCodeAt(0);
     this.muteKey = "M".charCodeAt(0);
+    this.pauseKey = "P".charCodeAt(0);
     this.ccw = false;
     this.cw = false;
 }
@@ -243,10 +244,6 @@ Game.prototype.fighterCollideMoon = function(fighter, moon) {
     this.cleanFighters();
 }
 
-Game.prototype.shootLaser = function() {
-
-}
-
 Game.prototype.updateMouse = function(e) {
     // Keep the mouse position in game coordinates
     // needs to account for the
@@ -272,7 +269,6 @@ Game.prototype.handleMouseDown = function(e) {
     // right mouse - laser beam
     else{
         // TODO: what of middle mouse clicks?
-        //this.shootLaser();
         this.firingBullets = true;
 
     }
@@ -305,25 +301,37 @@ Game.prototype.handleContext = function(e) {
 }
 
 Game.prototype.handleKeyDown = function(e) {
-    if(e.keyCode == this.muteKey) {
+    switch(e.keyCode) {
+    case this.muteKey:
         if(this.hasMusic() == this.hasEffects()) {
             this.toggleMusic();
             this.toggleEffects();
         } else {
             this.toggleMusic();
         }
-    }
-    if(e.keyCode == this.cwKey)
+        break;
+    case this.cwKey:
         this.cw = true;
-    if(e.keyCode == this.ccwKey)
+        break;
+    case this.ccwKey:
         this.ccw = true;
+        break;
+    case this.pauseKey:
+        console.log("PAUSING");
+        this.screen.pause_screen.open();
+        break;
+    }
 }
 
 Game.prototype.handleKeyUp = function(e) {
-    if(e.keyCode == this.cwKey)
+    switch(e.keyCode) {
+    case this.cwKey:
         this.cw = false;
-    if(e.keyCode == this.ccwKey)
+        break;
+    case this.ccwKey:
         this.ccw = false;
+        break;
+    }
 }
 
 Game.prototype.step = function(currentTime, dt) {
