@@ -23,6 +23,8 @@ function Game(ctx) {
     this.gameover_img = new Image();
     this.gameover_img.src = 'resources/gameover.png';
 
+
+
     this.theme_audio = new Audio();
     this.theme_audio.src = 'resources/theme1.ogg';
 
@@ -35,11 +37,13 @@ function Game(ctx) {
     this.torpedo_audio = new Audio();
     this.torpedo_audio.src = 'resources/torpedo.ogg';
 
+
     this.music = [this.theme_audio];
     this.effects = [
         this.blaster_audio,
         this.ambient_audio,
         this.torpedo_audio];
+
 
     this.level = null;
 
@@ -53,8 +57,10 @@ function Game(ctx) {
 
     this.ccwKey = "A".charCodeAt(0);
     this.cwKey = "D".charCodeAt(0);
+
     this.muteKey = "M".charCodeAt(0);
     this.pauseKey = "P".charCodeAt(0);
+
     this.ccw = false;
     this.cw = false;
     this.bounds = new BoundingBox(1600, 1200);
@@ -262,6 +268,7 @@ Game.prototype.handleMouseDown = function(e) {
         this.firingBullets = true;
 
     }
+
 
     return false;
 }
