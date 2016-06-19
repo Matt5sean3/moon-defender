@@ -9,6 +9,7 @@ function Game(ctx) {
 
     this.moon = null;
     this.gun = null;
+    this.life = 10;
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
@@ -22,14 +23,7 @@ function Game(ctx) {
     this.gameover_img = new Image();
     this.gameover_img.src = 'resources/gameover.png';
 
-    this.gameover_img = new Image();
-    this.gameover_img.src = 'resources/cutScene1.png';
 
-    this.gameover_img = new Image();
-    this.gameover_img.src = 'resources/cutScene2.png';
-
-    this.gameover_img = new Image();
-    this.gameover_img.src = 'resources/cutScene2.png';
 
     this.theme_audio = new Audio();
     this.theme_audio.src = 'resources/theme1.ogg';
@@ -43,6 +37,14 @@ function Game(ctx) {
     this.torpedo_audio = new Audio();
     this.torpedo_audio.src = 'resources/torpedo.ogg';
 
+
+    this.music = [this.theme_audio];
+    this.effects = [
+        this.blaster_audio,
+        this.ambient_audio,
+        this.torpedo_audio];
+
+
     this.level = null;
 
     this.screen = null;
@@ -55,8 +57,56 @@ function Game(ctx) {
 
     this.ccwKey = "A".charCodeAt(0);
     this.cwKey = "D".charCodeAt(0);
+
+    this.muteKey = "M".charCodeAt(0);
+    this.pauseKey = "P".charCodeAt(0);
+
     this.ccw = false;
     this.cw = false;
+}
+
+Game.prototype.setLife = function(v) {
+    this.life = v;
+}
+
+Game.prototype.toggleEffects = function() {
+    for (var c = 0; c < this.effects.length; c++) {
+        this.effects[c].muted = !this.effects[c].muted;
+    }
+}
+
+Game.prototype.setEffectsVolume = function(level) {
+    for (var c = 0; c < this.effects.length; c++) {
+        this.effects[c].volume = level;
+    }
+}
+
+Game.prototype.getEffectsVolume = function() {
+    return this.effects[0].volume;
+}
+
+Game.prototype.hasEffects = function() {
+    return !this.effects[0].muted;
+}
+
+Game.prototype.toggleMusic = function() {
+    for (var c = 0; c < this.music.length; c++) {
+        this.music[c].muted = !this.music[c].muted;
+    }
+}
+
+Game.prototype.hasMusic = function() {
+    return !this.music[0].muted;
+}
+
+Game.prototype.setMusicVolume= function(level) {
+    for (var c = 0; c < this.music.length; c++) {
+        this.music[c].volume = level;
+    }
+}
+
+Game.prototype.getMusicVolume = function() {
+    return this.music[0].volume;
 }
 
 Game.prototype.setScreen = function(screen) {
@@ -82,14 +132,15 @@ Game.prototype.getEntities = function() {
 
 Game.prototype.start = function() {
     // reset the stage
-    this.moon = new Moon(300000, Vector.create(0, 0), 100, this.lose.bind(this));
+    this.moon = new Moon(300000, Vector.create(0, 0), this.life, this.lose.bind(this));
     this.gun = new Gun(20, Vector.create(0, -30), 0);
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
 
-    this.addFighter(Vector.create(100, 50), Vector.create(0, 0));
+    //this.addFighter(Vector.create(100, 50), Vector.create(0, 0));  // this is creating one fighter on every level.
 
+    this.firingLaser = false;
     this.firingBullets = false;
     this.ccw = false;
     this.cw = false;
@@ -100,7 +151,6 @@ Game.prototype.start = function() {
 }
 
 Game.prototype.lose = function() {
-    console.log("LOST GAME!");
     if(this.screen)
         this.screen.close();
     if(this.lossScreen)
@@ -109,7 +159,6 @@ Game.prototype.lose = function() {
 }
 
 Game.prototype.win = function() {
-    console.log("WON LEVEL!");
     if(this.screen)
         this.screen.close();
     if(this.winScreen)
@@ -151,7 +200,19 @@ Game.prototype.cleanBullets = function() {
             i--;
         }
 }
-
+Game.prototype.addLaserBeam = function(bullet){
+  for (var i = 0; i < this.fighters.length; i++) {
+      var fighter = this.fighters[i];
+      this.collisions.addCollisionEvent(
+          bullet,
+          fighter,
+          this.bulletCollideFighter.bind(this, bullet, fighter));
+  }
+  this.bullets.push(bullet);
+  this.blaster_audio.pause();
+  this.blaster_audio.currentTime = 0;
+  this.blaster_audio.play();
+}
 Game.prototype.addBullet = function(bullet) {
     bullet.addGravity(this.moon);
     // add collision events between the bullet and all current fighters
@@ -189,12 +250,6 @@ Game.prototype.fighterCollideMoon = function(fighter, moon) {
     this.cleanFighters();
 }
 
-Game.prototype.shootLaser = function() {
-    this.blaster_audio.pause();
-    this.blaster_audio.currentTime = 0;
-    this.blaster_audio.play();
-}
-
 Game.prototype.updateMouse = function(e) {
     // Keep the mouse position in game coordinates
     // needs to account for the
@@ -215,26 +270,25 @@ Game.prototype.handleMouseDown = function(e) {
 
     // left mouse - bullet
     if(e.button === 0){
-        this.firingBullets = true;
+        this.firingLaser = true;
     }
     // right mouse - laser beam
     else{
         // TODO: what of middle mouse clicks?
-        console.log("RIGHT MOUSE CLICK!");
-        this.shootLaser();
-    }
-//    console.log(v);
-//    console.log(this.mouse);
+        this.firingBullets = true;
 
-    //do something with mouse position here
+    }
+
 
     return false;
 }
 
 Game.prototype.handleMouseUp = function(e) {
     if(e.button == 0) {
-        this.firingBullets = false;
+
     }
+    this.firingBullets = false;
+    this.firingLaser = false;
 }
 
 Game.prototype.hasNoFighters = function() {
@@ -247,7 +301,6 @@ Game.prototype.handleMove = function(e) {
 }
 
 Game.prototype.handleContext = function(e) {
-    //console.log("Right Mouse CLICK!!!");
     if (e.button === 2) {
         e.preventDefault();
         return false;
@@ -255,20 +308,42 @@ Game.prototype.handleContext = function(e) {
 }
 
 Game.prototype.handleKeyDown = function(e) {
-    if(e.keyCode == this.cwKey)
+    switch(e.keyCode) {
+    case this.muteKey:
+        if(this.hasMusic() == this.hasEffects()) {
+            this.toggleMusic();
+            this.toggleEffects();
+        } else {
+            this.toggleMusic();
+        }
+        break;
+    case this.cwKey:
         this.cw = true;
-    if(e.keyCode == this.ccwKey)
+        break;
+    case this.ccwKey:
         this.ccw = true;
+        break;
+    case this.pauseKey:
+        console.log("PAUSING");
+        this.screen.pause_screen.open();
+        break;
+    }
 }
 
 Game.prototype.handleKeyUp = function(e) {
-    if(e.keyCode == this.cwKey)
+    switch(e.keyCode) {
+    case this.cwKey:
         this.cw = false;
-    if(e.keyCode == this.ccwKey)
+        break;
+    case this.ccwKey:
         this.ccw = false;
+        break;
+    }
 }
 
 Game.prototype.step = function(currentTime, dt) {
+    if(this.firingLaser && this.gun.ready(this.screen.elapsedTime))
+        this.addLaserBeam(this.gun.shootLaser(this.screen.elapsedTime));
     if(this.firingBullets && this.gun.ready(this.screen.elapsedTime))
         this.addBullet(this.gun.shoot(this.screen.elapsedTime));
     if(this.level)

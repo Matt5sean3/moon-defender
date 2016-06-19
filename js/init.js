@@ -66,6 +66,7 @@ function init() {
     game.setScreen(playScreen);
 
     var menuScreen = new MenuScreen(ctx);
+    var optionScreen = new MenuScreen(ctx);
     // Allow just clicking through splash screens
     var splashScreen = new SplashScreen(ctx, 3, menuScreen);
     var gameoverScreen = new SplashScreen(ctx, 3, menuScreen);
@@ -197,6 +198,93 @@ function init() {
                 menuScreen.close();
                 levelScreens[0].open();
             }));
+
+
+    menuScreen.addOption(
+        new TextButton(
+            Vector.create(200, 400),
+            "Options",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+                menuScreen.pause();
+                optionScreen.open();
+            }));
+
+    // not a very deep menu tree, so it's manually implemented
+    optionScreen.addOption(
+        new TextButton(
+            Vector.create(100, 100),
+            "Back",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+                optionScreen.close();
+                menuScreen.unpause();
+            }));
+
+    function renderMuteButton(state_function, ctx, time, dt) {
+        ctx.beginPath();
+        ctx.strokeStyle = "#EEEEEE";
+        ctx.lineWidth = 2;
+        ctx.arc(0, 0, 25, 0, Math.PI * 2);
+        if(!state_function()) {
+            var p = 25 / Math.sqrt(2);
+            ctx.moveTo(-p, -p);
+            ctx.lineTo(p, p);
+        }
+        ctx.stroke();
+    }
+
+    var muteEffectsButton = new Button(
+        Vector.create(675, 170),
+        new BoundingCircle(25),
+        game.toggleEffects.bind(game));
+    muteEffectsButton.render = renderMuteButton.bind(null, game.hasEffects.bind(game));
+    optionScreen.addOption(muteEffectsButton);
+
+    optionScreen.addOption(
+        new TextButton(
+            Vector.create(100, 150),
+            "Effects",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+                game.effects[0].play();
+            }));
+
+    optionScreen.addSlider(
+        Vector.create(100, 200),
+        game.getEffectsVolume.bind(game),
+        game.setEffectsVolume.bind(game),
+        600,
+        50,
+        100);
+
+    var muteMusicButton = new Button(
+        Vector.create(675, 320),
+        new BoundingCircle(25),
+        game.toggleMusic.bind(game));
+    muteMusicButton.render = renderMuteButton.bind(null, game.hasMusic.bind(game));
+    optionScreen.addOption(muteMusicButton);
+
+    optionScreen.addOption(
+        new TextButton(
+            Vector.create(100, 300),
+            "Music",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+            }));
+
+    optionScreen.addSlider(
+        Vector.create(100, 350),
+        game.getMusicVolume.bind(game),
+        game.setMusicVolume.bind(game),
+        600,
+        50,
+        100);
+
 
     loadScreen.open();
 }

@@ -1,67 +1,82 @@
 [
   {
-    "time": 1,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
-  },
-  {
     "time": 2,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
-  },
-  {
-    "time": 3,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [-300, -200],
+    "velocity" : [0, 25]
   },
   {
     "time": 4,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
-  },
-  {
-    "time": 5,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [-100, -200],
+    "velocity" : [0, 15]
   },
   {
     "time": 6,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
-  },
-  {
-    "time": 7,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [100, -200],
+    "velocity" : [0, 15]
   },
   {
     "time": 8,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
-  },
-  {
-    "time": 9,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [300, -200],
+    "velocity" : [0, 25]
   },
   {
     "time": 10,
     "position" : [300, 0],
-    "velocity" : [0, 0]
-  },
-  {
-    "time": 11,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "velocity" : [-25, 0]
   },
   {
     "time": 12,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "position" : [300, 200],
+    "velocity" : [0, -30]
   },
   {
-    "time": 13,
-    "position" : [300, 0],
-    "velocity" : [0, 0]
+    "time": 14,
+    "position" : [100, 200],
+    "velocity" : [0, -15]
+  },
+  {
+    "time": 16,
+    "position" : [-100, 200],
+    "velocity" : [0, -15]
+  },
+  {
+    "time": 18,
+    "position" : [-300, 200],
+    "velocity" : [0, -30]
+  },
+  {
+    "time": 20,
+    "position" : [-300, 0],
+    "velocity" : [25, 0]
+  },
+  {
+    "time": 22,
+    "position" : [200, -100],
+    "velocity" : [-5, -10]
+  },
+  {
+    "time": 24,
+    "position" : [-100, 0],
+    "velocity" : [-5, 0]
+  },
+  {
+    "time": 26,
+    "position" : [-200, -100],
+    "velocity" : [5, -10]
+  },
+  {
+    "time": 28,
+    "position" : [-200, 100],
+    "velocity" : [5, 10]
+  },
+  {
+    "time": 30,
+    "position" : [0, 100],
+    "velocity" : [0, 5]
+  },
+  {
+    "time": 32,
+    "position" : [200, 100],
+    "velocity" : [-5, 10]
   }
 ]

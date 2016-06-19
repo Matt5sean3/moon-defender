@@ -21,6 +21,13 @@ BoundingBox.prototype.check = function(relpos) {
         relpos.y() > 0 && relpos.y() < this.height;
 }
 
+BoundingBox.prototype.draw = function(ctx) {
+    ctx.save();
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.strokeRect(0, 0, this.width, this.height);
+    ctx.restore();
+}
+
 function BoundingCircle(r) {
     this.radius = r;
 }
@@ -36,6 +43,15 @@ BoundingCircle.prototype.checkCollision = function(relpos, circle) {
 // Checks whether a location is within a bounding circle
 BoundingCircle.prototype.check = function(relpos) {
     return this.radius * this.radius > relpos.radiusSq()
+}
+
+BoundingCircle.prototype.draw = function(ctx) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.restore();
 }
 
 function CollisionEvent(item1, item2, event) {

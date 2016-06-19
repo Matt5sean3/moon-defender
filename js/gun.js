@@ -41,7 +41,15 @@ Gun.prototype.shoot = function(shotTime) {
         PolarVector.create(gunangle, 10 * Math.sqrt(2)).add(this.pos),
         PolarVector.create(gunangle, missile_power / Math.sqrt(2)));
 }
-
+Gun.prototype.shootLaser = function(shotTime) {
+    // Generates a new bullet
+    this.lastShotTime = shotTime;
+    var missile_power = 1000;
+    var gunangle = this.angle - Math.PI / 2;
+    return new Laser(5,
+        PolarVector.create(gunangle, 10 * Math.sqrt(2)).add(this.pos),
+        PolarVector.create(gunangle, missile_power / Math.sqrt(2)));
+}
 Gun.prototype.ready = function(shotTime) {
     return shotTime - this.lastShotTime >= this.firingPeriod;
 }
@@ -63,7 +71,7 @@ Gun.prototype.renderStand = function(ctx) {
     ctx.rotate(this.pos.angle() + Math.PI / 2);
     ctx.translate(-10,-21);
     ctx.transform(1.000000, 0.000000, 0.000000, 1.000000, 242.924070, -158.196400);
-    
+
 // #path1576
     ctx.beginPath();
     ctx.miterLimit = 4;
@@ -92,7 +100,7 @@ Gun.prototype.renderStand = function(ctx) {
     ctx.rotate(-0.000000);
     ctx.translate(231.659753, -203.553075);
     ctx.stroke();
-    
+
 // #path1578
     ctx.beginPath();
     ctx.miterLimit = 4;
@@ -101,7 +109,7 @@ Gun.prototype.renderStand = function(ctx) {
     ctx.moveTo(-242.852300, 189.830410);
     ctx.lineTo(-222.466360, 189.830410);
     ctx.stroke();
-    
+
 // #path1580
     ctx.beginPath();
     ctx.miterLimit = 4;
@@ -110,7 +118,7 @@ Gun.prototype.renderStand = function(ctx) {
     ctx.moveTo(-230.150780, 189.830410);
     ctx.lineTo(-230.150780, 177.846560);
     ctx.stroke();
-    
+
 // #path1582
     ctx.beginPath();
     ctx.miterLimit = 4;
@@ -119,7 +127,7 @@ Gun.prototype.renderStand = function(ctx) {
     ctx.moveTo(-235.167890, 189.830410);
     ctx.lineTo(-235.167890, 177.846560);
     ctx.stroke();
-    
+
 // #path1584
     ctx.beginPath();
     ctx.miterLimit = 4;
@@ -141,7 +149,7 @@ Gun.prototype.renderStand = function(ctx) {
     ctx.rotate(-0.000000);
     ctx.translate(232.659335, -177.850690);
     ctx.stroke();
-    
+
 // #path1586
     ctx.beginPath();
     ctx.miterLimit = 4;
@@ -163,7 +171,7 @@ Gun.prototype.renderStand = function(ctx) {
     ctx.rotate(-0.000000);
     ctx.translate(232.659340, -177.848320);
     ctx.stroke();
-    
+
 // #path1588
     ctx.beginPath();
     ctx.miterLimit = 4;
@@ -172,7 +180,7 @@ Gun.prototype.renderStand = function(ctx) {
     ctx.moveTo(-235.167890, 177.846560);
     ctx.lineTo(-237.552120, 187.022190);
     ctx.stroke();
-    
+
 // #path1590
     ctx.beginPath();
     ctx.miterLimit = 4;
@@ -185,18 +193,18 @@ Gun.prototype.renderStand = function(ctx) {
 }
 
 Gun.prototype.renderTurret = function(ctx, gunangle) {
-    
+
     ctx.save();
     var turretcolor = 'rgb(255, 0, 0)';
     ctx.translate(0, 10);
-    
+
     ctx.translate(-10,-21);
     ctx.transform(1.000000, 0.000000, 0.000000, 1.000000, 242.924070, -158.196400);
 // #g4208
     ctx.translate(-232.418380, 176.778286);
-    
+
     ctx.rotate(gunangle);
-    
+
     ctx.translate(232.418380, -176.778286);
 // #path1592
     ctx.beginPath();
@@ -216,7 +224,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.lineTo(-231.088300, 175.890860);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1594
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -233,7 +241,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.translate(232.418343, -172.591848);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1596
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -244,7 +252,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.lineTo(-231.848450, 159.591560);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1598
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -255,7 +263,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.lineTo(-232.988320, 159.591560);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1600
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -272,7 +280,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.translate(232.418411, -172.591852);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1602
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -289,7 +297,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.translate(232.418385, -159.109891);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1604
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -306,7 +314,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.translate(232.418385, -160.073229);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1606
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -317,7 +325,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.lineTo(-232.259880, 158.889470);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1608
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -328,7 +336,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.lineTo(-232.582560, 158.909430);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1610
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -345,7 +353,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.translate(232.421220, -159.459161);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1612
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -369,7 +377,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.translate(232.434655, -158.594730);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1614
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -384,7 +392,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.lineTo(-234.231680, 175.891930);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1616
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -399,7 +407,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.lineTo(-231.088980, 175.820690);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1618
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';
@@ -413,7 +421,7 @@ Gun.prototype.renderTurret = function(ctx, gunangle) {
     ctx.lineTo(-237.022430, 170.852970);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1620
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(255, 0, 0)';

@@ -28,26 +28,27 @@ Bullet.prototype.render = function(ctx) {
     // #layer1
     ctx.save();
     ctx.transform(1.000000, 0.000000, 0.000000, 1.000000, -465.254100, -410.795740);
-    
+
 // #g8132
     ctx.save();
     ctx.transform(0.400016, 0.000000, 0.000000, 0.400016, 279.144890, 251.407030);
-    
+
 // #g8128
-    
+
 // #path8118
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(129, 129, 129)';
     ctx.miterLimit = 4;
     ctx.lineWidth = 0.304000;
     ctx.moveTo(475.101560, 403.468750);
+    ctx.fillStyle = 'rgb(153,0,0)';
     ctx.lineTo(465.406250, 403.468750);
     ctx.lineTo(465.406250, 418.871090);
     ctx.lineTo(475.101560, 418.871090);
     ctx.lineTo(475.101560, 403.468750);
     ctx.fill();
     ctx.stroke();
-    
+
 // #path1538
     ctx.beginPath();
     ctx.strokeStyle = 'rgb(179, 83, 83)';
