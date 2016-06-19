@@ -16,7 +16,9 @@ Fighter.prototype.draw = function(ctx) {
 
 Fighter.prototype.render = function(ctx) {
 // #layer1
+//    this.bbox.draw(ctx);
     ctx.save();
+    ctx.translate(-this.bbox.radius, -this.bbox.radius);
     ctx.scale(2,2);
     ctx.transform(1.000000, 0.000000, 0.000000, 1.000000, -0.361287, -1042.136700);
 

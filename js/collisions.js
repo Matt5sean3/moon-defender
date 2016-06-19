@@ -38,6 +38,15 @@ BoundingCircle.prototype.check = function(relpos) {
     return this.radius * this.radius > relpos.radiusSq()
 }
 
+BoundingCircle.prototype.draw = function(ctx) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.restore();
+}
+
 function CollisionEvent(item1, item2, event) {
     this.item1 = item1;
     this.item2 = item2;
