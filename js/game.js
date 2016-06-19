@@ -6,34 +6,34 @@ function Game(ctx) {
     this.origin = Vector.create(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
     // Adjust the mouse position
     this.crosshairAdjustment = Vector.create(-10, -10);
-    
+
     this.moon = null;
     this.gun = null;
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
-    
+
     this.mouse = Vector.create(0, 0);
-    
+
     // more game resources
     this.moon_img = new Image();
     this.moon_img.src = 'resources/40px_Moon.png';
 
     this.gameover_img = new Image();
     this.gameover_img.src = 'resources/gameover.png';
-    
+
     this.theme_audio = new Audio();
     this.theme_audio.src = 'resources/theme1.ogg';
-    
+
     this.blaster_audio = new Audio();
     this.blaster_audio.src = 'resources/blaster.ogg';
-    
+
     this.ambient_audio = new Audio();
     this.ambient_audio.src = 'resources/ambient.ogg';
-    
+
     this.torpedo_audio = new Audio();
     this.torpedo_audio.src = 'resources/torpedo.ogg';
-    
+
     this.level = null;
 
     this.screen = null;
@@ -45,7 +45,7 @@ function Game(ctx) {
     this.bulletPeriod = 0.5;
 
     this.ccwKey = "A".charCodeAt(0);
-    this.cwKey = "D".charCodeAt(0); 
+    this.cwKey = "D".charCodeAt(0);
     this.ccw = false;
     this.cw = false;
 }
@@ -79,12 +79,13 @@ Game.prototype.start = function() {
     this.fighters = [];
     this.collisions = new CollisionGroup();
 
-    this.addFighter(Vector.create(100, 50), Vector.create(0, 0));
+    //this.addFighter(Vector.create(100, 50), Vector.create(0, 0));  // this is creating one fighter on every level.
 
+    this.firingLaser = false;
     this.firingBullets = false;
     this.ccw = false;
     this.cw = false;
-    
+
     this.theme_audio.loop = true;
     this.theme_audio.currentTime = 0;
     this.theme_audio.play();
@@ -142,15 +143,28 @@ Game.prototype.cleanBullets = function() {
             i--;
         }
 }
-
+Game.prototype.addLaserBeam = function(bullet){
+  //bullet.addGravity(this.moon)
+  for (var i = 0; i < this.fighters.length; i++) {
+      var fighter = this.fighters[i];
+      this.collisions.addCollisionEvent(
+          bullet,
+          fighter,
+          this.bulletCollideFighter.bind(this, bullet, fighter));
+  }
+  this.bullets.push(bullet);
+  this.blaster_audio.pause();
+  this.blaster_audio.currentTime = 0;
+  this.blaster_audio.play();
+}
 Game.prototype.addBullet = function(bullet) {
     bullet.addGravity(this.moon);
     // add collision events between the bullet and all current fighters
     for (var i = 0; i < this.fighters.length; i++) {
         var fighter = this.fighters[i];
         this.collisions.addCollisionEvent(
-            bullet, 
-            fighter, 
+            bullet,
+            fighter,
             this.bulletCollideFighter.bind(this, bullet, fighter));
     }
     this.bullets.push(bullet);
@@ -181,14 +195,12 @@ Game.prototype.fighterCollideMoon = function(fighter, moon) {
 }
 
 Game.prototype.shootLaser = function() {
-    this.blaster_audio.pause();
-    this.blaster_audio.currentTime = 0;
-    this.blaster_audio.play();
+
 }
 
 Game.prototype.updateMouse = function(e) {
     // Keep the mouse position in game coordinates
-    // needs to account for the 
+    // needs to account for the
     this.mouse = getMousePosition(e, this.ctx.canvas).subtract(this.crosshairAdjustment).subtract(this.origin);
 }
 
@@ -200,32 +212,35 @@ Game.prototype.handleMouseDown = function(e) {
 
     var missile_power = 200;
     // create a new bullet
-    
+
     var gunAngle = this.gun.getAngle() + Math.PI;
     var v = PolarVector.create(0, 10 * Math.sqrt(2)).rotate(gunAngle).addY(-30);
 
     // left mouse - bullet
     if(e.button === 0){
-        this.firingBullets = true;
+        this.firingLaser = true;
     }
     // right mouse - laser beam
     else{
         // TODO: what of middle mouse clicks?
-        console.log("RIGHT MOUSE CLICK!");
-        this.shootLaser();
+        //this.shootLaser();
+        this.firingBullets = true;
+
     }
 //    console.log(v);
 //    console.log(this.mouse);
 
     //do something with mouse position here
-    
+
     return false;
 }
 
 Game.prototype.handleMouseUp = function(e) {
     if(e.button == 0) {
-        this.firingBullets = false;
+
     }
+    this.firingBullets = false;
+    this.firingLaser = false;
 }
 
 Game.prototype.hasNoFighters = function() {
@@ -260,6 +275,8 @@ Game.prototype.handleKeyUp = function(e) {
 }
 
 Game.prototype.step = function(currentTime, dt) {
+    if(this.firingLaser && this.gun.ready(this.screen.elapsedTime))
+        this.addLaserBeam(this.gun.shootLaser(this.screen.elapsedTime));
     if(this.firingBullets && this.gun.ready(this.screen.elapsedTime))
         this.addBullet(this.gun.shoot(this.screen.elapsedTime));
     if(this.level)
