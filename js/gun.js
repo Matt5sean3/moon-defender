@@ -1,11 +1,14 @@
 
-function Gun(mass, pos, angle) {
+function Gun(mass, pos, angle, laserSfx, bulletSfx) {
     Mass.call(this, mass, pos, Vector.create(0,0), new BoundingCircle(10));
     this.angle = (angle === undefined) ? 0 : angle;
     this.lastShotTime = 0.0;
     // 5 Hz by default
     this.firingPeriod = 0.2;
     this.aim = Vector.create(0, 0);
+
+    this.laserSfx = (laserSfx === undefined)? null: laserSfx;
+    this.bulletSfx = (bulletSfx === undefined)? null: bulletSfx;
 }
 
 Gun.prototype = new Mass();
@@ -32,11 +35,14 @@ Gun.prototype.reset = function() {
     this.lastShotTime = 0;
 }
 
-Gun.prototype.shoot = function(shotTime) {
+Gun.prototype.shootBullet = function(shotTime) {
     // Generates a new bullet
     this.lastShotTime = shotTime;
     var missile_power = 200;
     var gunangle = this.angle - Math.PI / 2;
+    this.bulletSfx.pause();
+    this.bulletSfx.currentTime = 0;
+    this.bulletSfx.play();
     return new Bullet(5,
         PolarVector.create(gunangle, 10 * Math.sqrt(2)).add(this.pos),
         PolarVector.create(gunangle, missile_power / Math.sqrt(2)));
@@ -46,6 +52,9 @@ Gun.prototype.shootLaser = function(shotTime) {
     this.lastShotTime = shotTime;
     var missile_power = 1000;
     var gunangle = this.angle - Math.PI / 2;
+    this.laserSfx.pause();
+    this.laserSfx.currentTime = 0;
+    this.laserSfx.play();
     return new Laser(5,
         PolarVector.create(gunangle, 10 * Math.sqrt(2)).add(this.pos),
         PolarVector.create(gunangle, missile_power / Math.sqrt(2)));

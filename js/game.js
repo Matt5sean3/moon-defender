@@ -63,6 +63,11 @@ function Game(ctx) {
 
     this.ccw = false;
     this.cw = false;
+    this.bounds = new BoundingBox(1600, 1200);
+    this.upperXBound = 800;
+    this.lowerXBound = -800;
+    this.upperYBound = 600;
+    this.lowerYBound = -600;
 }
 
 Game.prototype.setLife = function(v) {
@@ -133,7 +138,7 @@ Game.prototype.getEntities = function() {
 Game.prototype.start = function() {
     // reset the stage
     this.moon = new Moon(300000, Vector.create(0, 0), this.life, this.lose.bind(this));
-    this.gun = new Gun(20, Vector.create(0, -30), 0);
+    this.gun = new Gun(20, Vector.create(0, -30), 0, this.blaster_audio, this.torpedo_audio);
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
@@ -200,20 +205,8 @@ Game.prototype.cleanBullets = function() {
             i--;
         }
 }
-Game.prototype.addLaserBeam = function(bullet){
-  for (var i = 0; i < this.fighters.length; i++) {
-      var fighter = this.fighters[i];
-      this.collisions.addCollisionEvent(
-          bullet,
-          fighter,
-          this.bulletCollideFighter.bind(this, bullet, fighter));
-  }
-  this.bullets.push(bullet);
-  this.blaster_audio.pause();
-  this.blaster_audio.currentTime = 0;
-  this.blaster_audio.play();
-}
-Game.prototype.addBullet = function(bullet) {
+
+Game.prototype.addShot = function(bullet) {
     bullet.addGravity(this.moon);
     // add collision events between the bullet and all current fighters
     for (var i = 0; i < this.fighters.length; i++) {
@@ -224,9 +217,6 @@ Game.prototype.addBullet = function(bullet) {
             this.bulletCollideFighter.bind(this, bullet, fighter));
     }
     this.bullets.push(bullet);
-    this.torpedo_audio.pause();
-    this.torpedo_audio.currentTime = 0;
-    this.torpedo_audio.play();
 }
 
 Game.prototype.bulletCollideFighter = function(bullet, fighter) {
@@ -343,14 +333,31 @@ Game.prototype.handleKeyUp = function(e) {
 
 Game.prototype.step = function(currentTime, dt) {
     if(this.firingLaser && this.gun.ready(this.screen.elapsedTime))
-        this.addLaserBeam(this.gun.shootLaser(this.screen.elapsedTime));
+        this.addShot(this.gun.shootLaser(this.screen.elapsedTime));
     if(this.firingBullets && this.gun.ready(this.screen.elapsedTime))
-        this.addBullet(this.gun.shoot(this.screen.elapsedTime));
+        this.addShot(this.gun.shootBullet(this.screen.elapsedTime));
     if(this.level)
         this.level.step(currentTime, dt);
     if(this.cw || this.ccw)
         this.gun.rotate(dt * (this.ccw - this.cw));
     this.gun.pointAt(this.mouse);
+    var entities = this.getEntities();
+    var killed_entity = false;
+    for (var i = 0; i < entities.length; i++)
+        if(!this.bounds.check(entities[i].getPosition().subtract(
+                Vector.create(-800, -600)))) {
+            entities[i].destroy();
+            killed_entity = true;
+        }
+    if (killed_entity) {
+        // clean collisions
+        this.collisions.clean();
+        // clean fighters
+        this.cleanFighters();
+        // clean bullets
+        this.cleanBullets();
+    }
+
     for (var i = 0; i < this.bullets.length; i++)
         this.bullets[i].step(currentTime, dt);
     for (var i = 0; i < this.fighters.length; i++)
