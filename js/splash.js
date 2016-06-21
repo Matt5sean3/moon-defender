@@ -1,10 +1,14 @@
 "use strict";
+// Clicking through is a fundamental splash screen option
+// Some splash screens are timed though
+
 // START SPLASH SCREEN
-function SplashScreen(ctx, duration, nextScreen, media) {
+function SplashScreen(ctx, nextScreen, media) {
     Screen.call(this, ctx);
-    this.duration = duration;
-    this.next = nextScreen;
+    this.next = (nextScreen === undefined)? null: nextScreen;
     this.media = (media === undefined)? []: media;
+    if(ctx !== undefined)
+        this.addHandler(ctx.canvas, "mousedown", this.close.bind(this));
 }
 
 SplashScreen.prototype = new Screen();
@@ -25,8 +29,6 @@ SplashScreen.prototype.unpause = function() {
 
 SplashScreen.prototype.draw = function(currentTime) {
     Screen.prototype.draw.call(this, currentTime);
-    if(this.elapsedTime > this.duration)
-        this.close();
     this.ctx.save();
     this.render(this.ctx, this.elapsedTime, this.dt);
     this.ctx.restore();
@@ -43,11 +45,24 @@ SplashScreen.prototype.close = function() {
     Screen.prototype.close.call(this);
     this.next.open();
 }
-// === END SPLASH SCREEN
-
 
 SplashScreen.prototype.render = function(ctx, currentTime, dt) {
     ctx.font = "20px Arial";
     ctx.fillStyle = "#0000FF";
     ctx.fillText("SPLASH PLACEHOLDER", 40, 40);
 }
+// === END SPLASH SCREEN
+
+function TimedSplashScreen(ctx, duration, nextScreen, media) {
+    SplashScreen.call(this, ctx, nextScreen, media);
+    this.duration = duration;
+}
+
+TimedSplashScreen.prototype = new SplashScreen();
+
+TimedSplashScreen.prototype.draw = function(currentTime) {
+    SplashScreen.prototype.draw.call(this, currentTime);
+    if(this.elapsedTime > this.duration)
+        this.close();
+}
+

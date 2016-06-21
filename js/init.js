@@ -82,40 +82,41 @@ function init() {
     var menuScreen = new MenuScreen(ctx);
     var optionScreen = new MenuScreen(ctx);
     // Allow just clicking through splash screens
-    var splashScreen = new SplashScreen(ctx, 3, menuScreen);
-    var gameoverScreen = new SplashScreen(ctx, 3, menuScreen);
+    var splashScreen = new TimedSplashScreen(ctx, 3, menuScreen);
+    var gameoverScreen = new TimedSplashScreen(ctx, 3, menuScreen);
 
 
     // Use prototype well enough
-    function MainLevel(request, render) {
+    function MainLevel(ctx, next, request, render) {
+        SplashScreen.call(this, ctx, next);
         if(render !== undefined)
             this.render = render;
         this.level_request = request;
     }
-    MainLevel.prototype = new SplashScreen(ctx, 5, playScreen);
+    MainLevel.prototype = new SplashScreen();
     MainLevel.prototype.game = game;
     MainLevel.prototype.nextScreen = null;
     MainLevel.prototype.render = function(ctx, currentTime, dt) {
         ctx.fillStyle = "#FFFFFF";
         ctx.font = "20px Arial";
         if("image" in this){
-          ctx.drawImage(this.image,0,0,800,600);
+            ctx.drawImage(this.image,0,0,800,600);
         }
         else{
-          ctx.fillText("Level Intro Placeholder", 200, 200);
+            ctx.fillText("Level Intro Placeholder", 200, 200);
         }
     }
     MainLevel.prototype.close = function() {
-        SplashScreen.prototype.close.call(this);
         this.game.playLevel(new Level(this.level_request.response));
         // Set the win screen
         this.game.setWinScreen(this.nextScreen);
+        SplashScreen.prototype.close.call(this);
     }
 
     // We'll have ten levels for some reason
     var levelScreens = new Array(10);
     for(var c = 0; c < levelScreens.length; c++) {
-        levelScreens[c] = new MainLevel(media[5 + c]);
+        levelScreens[c] = new MainLevel(ctx, playScreen, media[5 + c]);
     }
     for(var c = 0; c < levelScreens.length - 1; c++) {
         levelScreens[c].nextScreen = levelScreens[c + 1];
