@@ -21,6 +21,7 @@ function init() {
         new Image(),
         new Image(),
         new Image(),
+        new Image(),
         new Image()
       ];
     images[0].src = 'resources/40px_Moon.png';
@@ -36,6 +37,7 @@ function init() {
     images[10].src = 'resources/cutScene8.png';
     images[11].src = 'resources/cutScene9.png';
     images[12].src = 'resources/cutScene10.png';
+    images[13].src = 'resources/menuBackground.png';
 
     var media = [
         new Audio(),
@@ -197,6 +199,17 @@ function init() {
     var loadScreen = new LoadScreen(
         ctx, images, media, splashScreen);
 
+    menuScreen.render = function(ctx, currentTime, dt) {
+        ctx.drawImage(images[13], 0, 0);
+        ctx.font = "60px joystix";
+        ctx.fillStyle = "#EE1111";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
+        ctx.translate(160, 80);
+        ctx.fillText("Moon", 0, 0);
+        ctx.fillText("Defender", 60, 80);
+    }
+
     // Add a play button to the menuScreen
     menuScreen.addOption(
         new TextButton(
@@ -232,6 +245,9 @@ function init() {
                 menuScreen.pause();
                 optionScreen.open();
             }));
+
+    // Don't worry about putting anything for the options Menu
+    optionScreen.render = function() {}
 
     // not a very deep menu tree, so it's manually implemented
     optionScreen.addOption(

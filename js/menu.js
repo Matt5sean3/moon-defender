@@ -127,7 +127,6 @@ TextButton.prototype.measure = function(ctx) {
 }
 
 TextButton.prototype.render = function(ctx, currentTime, dt) {
-    this.bbox.draw(ctx);
     ctx.font = this.font;
     ctx.textAlign = "left";
     ctx.textBaseline = "top";

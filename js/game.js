@@ -5,7 +5,6 @@ function Game(ctx) {
 
     this.origin = Vector.create(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
     // Adjust the mouse position
-    this.crosshairAdjustment = Vector.create(-10, -10);
 
     this.moon = null;
     this.gun = null;
@@ -243,7 +242,7 @@ Game.prototype.fighterCollideMoon = function(fighter, moon) {
 Game.prototype.updateMouse = function(e) {
     // Keep the mouse position in game coordinates
     // needs to account for the
-    this.mouse = getMousePosition(e, this.ctx.canvas).subtract(this.crosshairAdjustment).subtract(this.origin);
+    this.mouse = getMousePosition(e, this.ctx.canvas).subtract(this.origin);
 }
 
 Game.prototype.handleMouseDown = function(e) {
