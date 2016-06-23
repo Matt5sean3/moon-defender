@@ -87,12 +87,45 @@ function init() {
     var splashScreen = new TimedSplashScreen(ctx, 3, menuScreen);
     var gameoverScreen = new TimedSplashScreen(ctx, 3, menuScreen);
     var victoryScreen = new SplashScreen(ctx, splashScreen);
+    var creditsScreen = new SplashScreen(ctx, menuScreen);
 
     victoryScreen.render = function(ctx, currentTime, dt) {
         ctx.fillStyle = "#EE1111";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
         ctx.fillText("The moon is saved!", 400, 300);
+    }
+
+    creditsScreen.render = function(ctx, currentTime, dt) {
+        ctx.fillStyle = "#CCCCCC";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+
+        ctx.save();
+        ctx.translate(160, 100);
+        ctx.font = "40px joystix";
+        ctx.fillText("Art", 0, 0);
+        ctx.font = "32px joystix";
+        ctx.fillText("Aaron Nipper", 5, 44);
+        ctx.fillText("Eli Woods", 5, 80);
+        ctx.fillText("Dustin Firebaugh", 5, 116);
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(160, 300);
+        ctx.font = "40px joystix";
+        ctx.fillText("Code", 0, 0);
+        ctx.font = "32px joystix";
+        ctx.fillText("Matthew Balch", 5, 44);
+        ctx.fillText("Eli Woods", 5, 80);
+        ctx.fillText("Dustin Firebaugh", 5, 116);
+        ctx.restore();
+
+        ctx.font = "12px joystix";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillStyle = "#CCCCCC";
+        ctx.fillText("click to return to the menu screen", 400, 580);
     }
 
     // Use prototype well enough
@@ -114,6 +147,11 @@ function init() {
         else{
             ctx.fillText("Level Intro Placeholder", 200, 200);
         }
+        ctx.font = "12px joystix";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillStyle = "#000000";
+        ctx.fillText("click to proceed", 20, 580);
     }
     MainLevel.prototype.close = function() {
         this.game.playLevel(new Level(this.level_request.response));
@@ -252,6 +290,16 @@ function init() {
             function() {
                 menuScreen.pause();
                 optionScreen.open();
+            }));
+    menuScreen.addOption(
+        new TextButton(
+            Vector.create(200, 450),
+            "Credits",
+            "24px joystix",
+            "#CCCCCC",
+            function() {
+                menuScreen.close();
+                creditsScreen.open();
             }));
 
     // Don't worry about putting anything for the options Menu
