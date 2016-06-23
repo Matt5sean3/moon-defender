@@ -86,7 +86,14 @@ function init() {
     // Allow just clicking through splash screens
     var splashScreen = new TimedSplashScreen(ctx, 3, menuScreen);
     var gameoverScreen = new TimedSplashScreen(ctx, 3, menuScreen);
+    var victoryScreen = new SplashScreen(ctx, splashScreen);
 
+    victoryScreen.render = function(ctx, currentTime, dt) {
+        ctx.fillStyle = "#EE1111";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        ctx.fillText("The moon is saved!", 400, 300);
+    }
 
     // Use prototype well enough
     function MainLevel(ctx, next, request, render) {
@@ -123,6 +130,7 @@ function init() {
     for(var c = 0; c < levelScreens.length - 1; c++) {
         levelScreens[c].nextScreen = levelScreens[c + 1];
     }
+    levelScreens[levelScreens.length - 1].nextScreen = victoryScreen;
     gameoverScreen.image = images[1];
     levelScreens[0].image = images[3];
     levelScreens[1].image = images[4];
