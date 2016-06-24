@@ -13,6 +13,20 @@ function MenuScreen(ctx) {
 
 MenuScreen.prototype = new Screen();
 
+MenuScreen.prototype.open = function() {
+    Screen.prototype.open.call(this);
+    if("parent_screen" in this) {
+        this.parent_screen.pause();
+    }
+}
+
+MenuScreen.prototype.close = function() {
+    Screen.prototype.close.call(this);
+    if("parent_screen" in this) {
+        this.parent_screen.unpause();
+    }
+}
+
 MenuScreen.prototype.handleClick = function(e) {
     var mouseLocation = getMousePosition(e, this.ctx.canvas);
     for(var i = 0; i < this.options.length; i++)

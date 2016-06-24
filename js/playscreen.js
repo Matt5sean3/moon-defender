@@ -3,10 +3,9 @@
 // === START PLAY SCREEN
 function PlayScreen(ctx, game) {
     Screen.call(this, ctx);
+    this.game = game;
 
     this.pause_screen = new PauseScreen(ctx, this);
-
-    this.game = game;
     this.addHandler(ctx.canvas, "mousedown", game.handleMouseDown.bind(game));
     this.addHandler(ctx.canvas, "mouseup", game.handleMouseUp.bind(game));
     this.addHandler(ctx.canvas, "mousemove", game.handleMove.bind(game));
@@ -78,6 +77,7 @@ PlayScreen.prototype.drawHud = function() {
 function PauseScreen(ctx, parent_screen) {
     MenuScreen.call(this, ctx);
     this.parent_screen = parent_screen;
+    this.option_screen = new OptionScreen(this.ctx, this, this.parent_screen.game);
     this.addOption(
         new TextButton(
             Vector.create(300, 300),
@@ -85,6 +85,23 @@ function PauseScreen(ctx, parent_screen) {
             "24px joystix",
             "#CCCCCC",
             this.close.bind(this)));
+    this.addOption(
+        new TextButton(
+            Vector.create(300, 350),
+            "options",
+            "24px joystix",
+            "#CCCCCC",
+            this.option_screen.open.bind(this.option_screen)));
+    this.addOption(
+        new TextButton(
+            Vector.create(300, 400),
+            "quit",
+            "24px joystix",
+            "#CCCCCC",
+            (function() {
+                this.close();
+                this.parent_screen.game.lose();
+            }).bind(this)));
 }
 
 PauseScreen.prototype = new MenuScreen();
@@ -92,10 +109,5 @@ PauseScreen.prototype = new MenuScreen();
 PauseScreen.prototype.open = function() {
     MenuScreen.prototype.open.call(this);
     this.parent_screen.pause();
-}
-
-PauseScreen.prototype.close = function() {
-    MenuScreen.prototype.close.call(this);
-    this.parent_screen.unpause();
 }
 

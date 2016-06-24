@@ -313,7 +313,6 @@ Game.prototype.handleKeyDown = function(e) {
         this.ccw = true;
         break;
     case this.pauseKey:
-        console.log("PAUSING");
         this.screen.pause_screen.open();
         break;
     }
