@@ -80,7 +80,7 @@ ScoreBoardScreen.prototype.submitScore = function(name, score) {
       this.scores = req.responseText.split(";");
     }
   }).bind(this));
-  req.open("GET", "cgi/score.py?name=" + name +"&score=" + score, true);
+  req.open("GET", "../cgi-bin/score.py?name=" + name +"&score=" + score, true);
   req.send();
 }
 

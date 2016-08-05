@@ -86,8 +86,8 @@ function init() {
     var menuScreen = new MenuScreen(ctx);
     var optionScreen = new OptionScreen(ctx, menuScreen, game);
     // Allow just clicking through splash screens
-    var scoreScreen = new ScoreBoardScreen(ctx, menuScreeen, []);
-    var gameoverScreen = new TimedSplashScreen(ctx, 3, menuScreen);
+    var scoreScreen = new ScoreBoardScreen(ctx, menuScreen, []);
+    var gameoverScreen = new TimedSplashScreen(ctx, 3, scoreScreen);
     var splashScreen = new TimedSplashScreen(ctx, 3, menuScreen);
     var victoryScreen = new SplashScreen(ctx, splashScreen);
     var creditsScreen = new SplashScreen(ctx, menuScreen);
