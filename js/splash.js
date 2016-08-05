@@ -66,3 +66,30 @@ TimedSplashScreen.prototype.draw = function(currentTime) {
         this.close();
 }
 
+function ScoreBoardScreen(ctx, nextScreen, media) {
+  SplashScreen.call(this, ctx, nextScreen, media);
+  this.scores = [];
+}
+
+ScoreBoardScreen.prototype = new SplashScreen();
+
+ScoreBoardScreen.prototype.submitScore = function(name, score) {
+  var req = new XMLHttpRequest();
+  req.addEventListener("readystatechange", (function(){
+    if(req.readyState == 4 && req.status == 200) {
+      this.scores = req.responseText.split(";");
+    }
+  }).bind(this));
+  req.open("GET", "cgi/score.py?name=" + name +"&score=" + score, true);
+  req.send();
+}
+
+ScoreBoardScreen.prototype.draw = function(currentTime) {
+  SplashScreen.prototype.draw.call(this, currentTime);
+  this.ctx.save();
+  this.ctx.font = "18px joystix";
+  for(var c = 0; c < this.scores.length; c++)
+    this.ctx.fillText(this.scores[c], 100, c * 20);
+  this.ctx.restore();
+}
+

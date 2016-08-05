@@ -51,6 +51,13 @@ PlayScreen.prototype.draw = function(currentTime) {
 
     this.ctx.restore();
 
+    // draw the number of fighters spawned this level
+    this.ctx.save();
+    this.ctx.fillStyle = "#FF0000";
+    this.ctx.font = "24px joystix";
+    this.ctx.fillText("SCORE: " + Math.round(this.elapsedTime * 1000), 200, 550);
+    this.ctx.restore();
+
     // draw the HUD
     this.drawHud();
     
