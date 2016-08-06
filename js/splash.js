@@ -68,28 +68,64 @@ TimedSplashScreen.prototype.draw = function(currentTime) {
 
 function ScoreBoardScreen(ctx, nextScreen, media) {
   SplashScreen.call(this, ctx, nextScreen, media);
+  this.name = "";
+  this.score = 0;
   this.scores = [];
+  this.addHandler(window, "keydown", (function(e) {
+    if( e.key.length == 1 && 
+        this.name.length < 20 && 
+        ((e.key >= "a" && e.key <= "z") || (e.key >= "A" && e.key <= "Z")))
+      this.name = this.name + e.key;
+    else if(e.key == "Backspace")
+      this.name = this.name.slice(0, this.name.length - 1);
+    else if(e.key == "Enter" && this.name != "")
+      this.submitScore(this.name, this.score);
+  }).bind(this));
 }
 
 ScoreBoardScreen.prototype = new SplashScreen();
 
-ScoreBoardScreen.prototype.submitScore = function(name, score) {
+ScoreBoardScreen.prototype.getScores = function() {
+  // Retrieves the current leaderboard
   var req = new XMLHttpRequest();
   req.addEventListener("readystatechange", (function(){
     if(req.readyState == 4 && req.status == 200) {
       this.scores = req.responseText.split(";");
     }
   }).bind(this));
-  req.open("GET", "../cgi-bin/score.py?name=" + name +"&score=" + score, true);
+  req.open("GET", "../cgi-bin/getscores.py", true);
   req.send();
 }
 
-ScoreBoardScreen.prototype.draw = function(currentTime) {
-  SplashScreen.prototype.draw.call(this, currentTime);
+ScoreBoardScreen.prototype.submitScore = function(name, score) {
+  var req = new XMLHttpRequest();
+  req.addEventListener("readystatechange", (function(){
+    if(req.readyState == 4 && req.status == 200) {
+      var readback = req.responseText.split(",");
+      if(name != readback[0] || score != parseInt(readback[1])) {
+        alert(req.responseText);
+      }
+    }
+  }).bind(this));
+  req.open("GET", "../cgi-bin/addscore.py?name=" + name +"&score=" + score, true);
+  req.send();
+}
+
+ScoreBoardScreen.prototype.setScore = function(score) {
+  this.score = score;
+}
+
+ScoreBoardScreen.prototype.render = function(currentTime) {
   this.ctx.save();
   this.ctx.font = "18px joystix";
+  this.ctx.fillStyle = "#FFFFFF";
+  this.ctx.fillText("Enter your name: ", 100, 50);
+  if(this.name != "")
+    this.ctx.fillText("Press enter to submit your score.", 100, 75);
+  this.ctx.fillText(this.name, 400, 50);
+  this.ctx.fillText("LEADERBOARD", 100, 125);
   for(var c = 0; c < this.scores.length; c++)
-    this.ctx.fillText(this.scores[c], 100, c * 20);
+    this.ctx.fillText(this.scores[c], 100, 150 + c * 20);
   this.ctx.restore();
 }
 

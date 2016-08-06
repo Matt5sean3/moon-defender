@@ -47,6 +47,7 @@ function Game(ctx) {
     this.level = null;
 
     this.screen = null;
+    this.scoreScreen = null;
     this.lossScreen = null;
     this.wonScreen = null;
 
@@ -59,6 +60,7 @@ function Game(ctx) {
 
     this.muteKey = "M".charCodeAt(0);
     this.pauseKey = "P".charCodeAt(0);
+    this.suicideKey = "Q".charCodeAt(0);
 
     this.ccw = false;
     this.cw = false;
@@ -117,6 +119,10 @@ Game.prototype.setScreen = function(screen) {
     this.screen = screen;
 }
 
+Game.prototype.setScoreScreen = function(screen) {
+    this.scoreScreen = screen;
+}
+
 Game.prototype.setLossScreen = function(screen) {
     this.lossScreen = screen;
 }
@@ -157,7 +163,7 @@ Game.prototype.start = function() {
 Game.prototype.lose = function() {
     if(this.screen)
         this.screen.close();
-    this.scoreScreen.submitScore(this.screen.elapsedTime);
+    this.scoreScreen.setScore(this.screen.elapsedTime);
     if(this.lossScreen)
         this.lossScreen.open();
     this.theme_audio.pause();
@@ -315,6 +321,9 @@ Game.prototype.handleKeyDown = function(e) {
         break;
     case this.pauseKey:
         this.screen.pause_screen.open();
+        break;
+    case this.suicideKey:
+        this.lose();
         break;
     }
 }

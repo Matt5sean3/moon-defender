@@ -92,6 +92,8 @@ function init() {
     var victoryScreen = new SplashScreen(ctx, splashScreen);
     var creditsScreen = new SplashScreen(ctx, menuScreen);
 
+    game.setScoreScreen(scoreScreen);
+
     victoryScreen.render = function(ctx, currentTime, dt) {
         ctx.drawImage(images[14], 0, 0, 800, 600);
     }
