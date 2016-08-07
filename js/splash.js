@@ -90,7 +90,7 @@ ScoreBoardScreen.prototype.getScores = function() {
   var req = new XMLHttpRequest();
   req.addEventListener("readystatechange", (function(){
     if(req.readyState == 4 && req.status == 200) {
-      this.scores = req.responseText.split(";");
+      this.scores = req.responseText.split("\n");
     }
   }).bind(this));
   req.open("GET", "../cgi-bin/getscores.py", true);
@@ -102,12 +102,9 @@ ScoreBoardScreen.prototype.submitScore = function(name, score) {
   req.addEventListener("readystatechange", (function(){
     if(req.readyState == 4 && req.status == 200) {
       var readback = req.responseText.split(",");
-      if(name != readback[0] || score != parseInt(readback[1])) {
-        alert(req.responseText);
-      }
     }
   }).bind(this));
-  req.open("GET", "../cgi-bin/addscore.py?name=" + name +"&score=" + score, true);
+  req.open("GET", "../cgi-bin/addscore.py?name=" + name +"&score=" + Math.round(score), true);
   req.send();
 }
 

@@ -164,6 +164,7 @@ Game.prototype.lose = function() {
     if(this.screen)
         this.screen.close();
     this.scoreScreen.setScore(this.screen.elapsedTime);
+    this.scoreScreen.getScores();
     if(this.lossScreen)
         this.lossScreen.open();
     this.theme_audio.pause();
