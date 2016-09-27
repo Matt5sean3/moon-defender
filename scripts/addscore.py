@@ -5,7 +5,7 @@ import sys
 import MySQLdb
 
 def add_score(cur, name, score):
-  cur.execute("INSERT INTO moon_defender VALUES (%s, %s);", (name, score))
+  cur.execute("INSERT INTO leaderboard VALUES (%s, %s);", (name, score))
 
 print "Content-type: text/plain"
 print ""
@@ -16,9 +16,9 @@ name = form.getvalue("name", "Dr. Fail")
 score = int(form.getvalue("score", "0"))
 
 try:
-  db = MySQLdb.connect(host="localhost",
-                       user="hackrva_games",
-                       db="hackrva_games",
+  db = MySQLdb.connect(host="",
+                       user="",
+                       db="",
                        passwd="")
   add_score(db.cursor(), name, score)
   db.commit()

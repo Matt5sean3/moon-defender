@@ -1,2 +1,2 @@
-CREATE TABLE moondefender (name TEXT, score BIGINT);
+CREATE TABLE leaderboard (name TEXT, score BIGINT);
 
