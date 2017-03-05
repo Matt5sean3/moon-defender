@@ -261,7 +261,7 @@ function init() {
     // Add a play button to the menuScreen
     menuScreen.addOption(
         new TextButton(
-            Vector.create(200, 300),
+            Vector2.create(200, 300),
             "Marathon Mode",
             "24px joystix",
             "#CCCCCC",
@@ -273,7 +273,7 @@ function init() {
 
     menuScreen.addOption(
         new TextButton(
-            Vector.create(200, 350),
+            Vector2.create(200, 350),
             "Story Mode",
             "24px joystix",
             "#CCCCCC",
@@ -285,7 +285,7 @@ function init() {
 
     menuScreen.addOption(
         new TextButton(
-            Vector.create(200, 400),
+            Vector2.create(200, 400),
             "Options",
             "24px joystix",
             "#CCCCCC",
@@ -293,7 +293,7 @@ function init() {
 
     menuScreen.addOption(
         new TextButton(
-            Vector.create(200, 450),
+            Vector2.create(200, 450),
             "Credits",
             "24px joystix",
             "#CCCCCC",

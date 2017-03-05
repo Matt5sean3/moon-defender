@@ -1,8 +1,8 @@
 "use strict";
 
 function Entity(pos, vel, bbox) {
-    this.pos = (pos === undefined) ? Vector.create(0, 0) : pos;
-    this.vel = (vel === undefined) ? Vector.create(0, 0) : vel;
+    this.pos = (pos === undefined) ? Vector2.create(0, 0) : pos;
+    this.vel = (vel === undefined) ? Vector2.create(0, 0) : vel;
     this.bbox = (bbox === undefined) ? new BoundingCircle(0) : bbox;
     this.destroyed = false; // treat as protected
 }

@@ -15,9 +15,11 @@ function PlayScreen(ctx, game) {
     this.addHandler(window, "blur", 
         this.pause_screen.open.bind(this.pause_screen));
 
-    var width = ctx.canvas.width - 10;
-    var height = 20;
-    this.lifeBar = new Bar(Vector.create(10, 10), Vector.create(width, height));
+    /* TODO make base width and base height gathered externally somehow */
+    this.baseWidth = 800;
+    this.baseHeight = 600;
+
+    this.lifeBar = new Bar(Vector2.create(10, 10), Vector2.create(this.baseWidth - 10, 20));
     this.lifeBar.setBorder("#DDDDDD", 3);
     this.lifeBar.setFill("#00CC00");
     this.lifeBar.getMax = (function() {
@@ -35,15 +37,18 @@ PlayScreen.prototype.open = function() {
     this.game.start();
 }
 
+PlayScreen.prototype.step = function(currentTime) {
+    Screen.prototype.step.call(this, currentTime);
+    this.game.step(this.elapsedTime, this.dt);
+}
+
 PlayScreen.prototype.draw = function(currentTime) {
     Screen.prototype.draw.call(this, currentTime);
     // draw the background of stars
     this.drawBackground();
-    // update the play entities
-    this.game.step(this.elapsedTime, this.dt);
     // draw the play entities
     this.ctx.save();
-    this.ctx.translate(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
+    this.ctx.translate(this.game.origin.x, this.game.origin.y);
     var entities = this.game.getEntities();
 
     for(var i = 0; i < entities.length; i++)
@@ -60,7 +65,22 @@ PlayScreen.prototype.draw = function(currentTime) {
 
     // draw the HUD
     this.drawHud();
-    
+
+    // Draw the cursor
+    this.ctx.save();
+    this.ctx.translate(
+        this.game.mouse.x + this.game.origin.x,
+        this.game.mouse.y + this.game.origin.y);
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = "#FF0000";
+    this.ctx.beginPath();
+    this.ctx.arc(0, 0, 5, 0, 2 * Math.PI);
+    this.ctx.moveTo(0, -8);
+    this.ctx.lineTo(0, 8);
+    this.ctx.moveTo(-8, 0);
+    this.ctx.lineTo(8, 0);
+    this.ctx.stroke();
+    this.ctx.restore();
 }
 
 PlayScreen.prototype.drawBackground = function() {
@@ -87,21 +107,21 @@ function PauseScreen(ctx, parent_screen) {
     this.option_screen = new OptionScreen(this.ctx, this, this.parent_screen.game);
     this.addOption(
         new TextButton(
-            Vector.create(300, 300),
+            Vector2.create(300, 300),
             "continue",
             "24px joystix",
             "#CCCCCC",
             this.close.bind(this)));
     this.addOption(
         new TextButton(
-            Vector.create(300, 350),
+            Vector2.create(300, 350),
             "options",
             "24px joystix",
             "#CCCCCC",
             this.option_screen.open.bind(this.option_screen)));
     this.addOption(
         new TextButton(
-            Vector.create(300, 400),
+            Vector2.create(300, 400),
             "quit",
             "24px joystix",
             "#CCCCCC",

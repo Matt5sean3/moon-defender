@@ -5,9 +5,11 @@ function MenuScreen(ctx) {
     Screen.call(this, ctx);
     this.options = [];
     this.sliders = [];
+    this.mouseLocation = Vector2.create(0, 0);
     if(ctx !== undefined) {
         this.addHandler(ctx.canvas, "mousedown", this.handleClick.bind(this));
         this.addHandler(ctx.canvas, "mouseup", this.handleLift.bind(this));
+        this.addHandler(ctx.canvas, "mousemove", this.handleMove.bind(this));
     }
 }
 
@@ -28,23 +30,25 @@ MenuScreen.prototype.close = function() {
 }
 
 MenuScreen.prototype.handleClick = function(e) {
-    var mouseLocation = getMousePosition(e, this.ctx.canvas);
+    this.mouseLocation = getMousePosition(e, this.ctx.canvas);
     for(var i = 0; i < this.options.length; i++)
-        this.options[i].check(mouseLocation);
+        this.options[i].check(this.mouseLocation);
     for(var i = 0; i < this.sliders.length; i++)
-        this.sliders[i].down(mouseLocation);
+        this.sliders[i].down(this.mouseLocation);
 }
 
 MenuScreen.prototype.handleMove = function(e) {
-    var mouseLocation = getMousePosition(e, this.ctx.canvas);
+    this.mouseLocation = getMousePosition(e, this.ctx.canvas);
     for(var i = 0; i < this.sliders.length; i++)
-        this.sliders[i].move(mouseLocation);
+        this.sliders[i].move(this.mouseLocation);
+    /* Trigger redraw */
+    this.draw();
 }
 
 MenuScreen.prototype.handleLift = function(e) {
-    var mouseLocation = getMousePosition(e, this.ctx.canvas);
+    this.mouseLocation = getMousePosition(e, this.ctx.canvas);
     for(var i = 0; i < this.sliders.length; i++)
-        this.sliders[i].lift(mouseLocation);
+        this.sliders[i].lift(this.mouseLocation);
 }
 
 MenuScreen.prototype.addOption = function(loc, renderFunction, bbox, event) {
@@ -81,6 +85,18 @@ MenuScreen.prototype.draw = function(currentTime) {
         this.sliders[i].draw(this.ctx, this.lastTime, this.dt);
         this.ctx.restore();
     }
+    /* Draw the mouse */
+    this.ctx.save();
+    this.ctx.strokeStyle = "#FF0000";
+    this.ctx.strokeWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.translate(this.mouseLocation.x, this.mouseLocation.y);
+    this.ctx.moveTo(0, -8);
+    this.ctx.lineTo(0, 8);
+    this.ctx.moveTo(-8, 0);
+    this.ctx.lineTo(8, 0);
+    this.ctx.stroke();
+    this.ctx.restore();
 }
 
 MenuScreen.prototype.render = function(ctx, currentTime, dt) {
@@ -100,7 +116,7 @@ Button.prototype = new Object();
 
 Button.prototype.draw = function(ctx, currentTime, dt) {
     ctx.save();
-    ctx.translate(this.loc.x(), this.loc.y());
+    ctx.translate(this.loc.x, this.loc.y);
     this.render(ctx, currentTime, dt);
     ctx.restore();
 }
@@ -162,7 +178,7 @@ Slider.prototype = new Object();
 
 Slider.prototype.draw = function(ctx, time, dt) {
     ctx.save();
-    ctx.translate(this.loc.x(), this.loc.y());
+    ctx.translate(this.loc.x, this.loc.y);
     this.render(ctx, time, dt);
     ctx.restore();
 }
@@ -186,24 +202,24 @@ Slider.prototype.setValue = function(value) {
 Slider.prototype.down = function(pos) {
     //
     var relpos = pos.subtract(this.loc);
-    if(relpos.x() > 0 && 
-        relpos.x() <= this.width && 
-        relpos.y() > 0 && 
-        relpos.y() <= this.height) {
+    if(relpos.x > 0 && 
+        relpos.x <= this.width && 
+        relpos.y > 0 && 
+        relpos.y <= this.height) {
         this.sliding = true;
-        this.setSliderPosition(relpos.x());
+        this.setSliderPosition(relpos.x);
     }
 }
 
 Slider.prototype.lift = function(pos) {
     if(this.sliding)
-        this.setSliderPosition(pos.subtract(this.loc).x());
+        this.setSliderPosition(pos.subtract(this.loc).x);
     this.sliding = false;
 }
 
 Slider.prototype.move = function(pos) {
     if(this.sliding)
-        this.setSliderPosition(pos.subtract(this.loc).x());
+        this.setSliderPosition(pos.subtract(this.loc).x);
 }
 
 Slider.prototype.setSliderPosition = function(xpos) {

@@ -28,7 +28,7 @@ Gun.prototype.rotate = function(rotation) {
 
 Gun.prototype.pointAt = function(pos) {
     this.aim = pos;
-    this.setAngle(pos.subtract(this.pos).angle() + Math.PI / 2);
+    this.setAngle(pos.subtract(this.pos).angle + Math.PI / 2);
 }
 
 Gun.prototype.reset = function() {
@@ -44,8 +44,8 @@ Gun.prototype.shootBullet = function(shotTime) {
     this.bulletSfx.currentTime = 0;
     this.bulletSfx.play();
     return new Bullet(5,
-        PolarVector.create(gunangle, 10 * Math.sqrt(2)).add(this.pos),
-        PolarVector.create(gunangle, missile_power / Math.sqrt(2)));
+        PolarVector2.create(gunangle, 10 * Math.sqrt(2)).add(this.pos),
+        PolarVector2.create(gunangle, missile_power / Math.sqrt(2)));
 }
 Gun.prototype.shootLaser = function(shotTime) {
     // Generates a new bullet
@@ -56,8 +56,8 @@ Gun.prototype.shootLaser = function(shotTime) {
     this.laserSfx.currentTime = 0;
     this.laserSfx.play();
     return new Laser(5,
-        PolarVector.create(gunangle, 10 * Math.sqrt(2)).add(this.pos),
-        PolarVector.create(gunangle, missile_power / Math.sqrt(2)));
+        PolarVector2.create(gunangle, 10 * Math.sqrt(2)).add(this.pos),
+        PolarVector2.create(gunangle, missile_power / Math.sqrt(2)));
 }
 Gun.prototype.ready = function(shotTime) {
     return shotTime - this.lastShotTime >= this.firingPeriod;
@@ -67,7 +67,7 @@ Gun.prototype.ready = function(shotTime) {
 
 Gun.prototype.draw = function(ctx) {
     ctx.save();
-    ctx.translate(this.pos.x(), this.pos.y());
+    ctx.translate(this.pos.x, this.pos.y);
     this.renderStand(ctx);
     ctx.translate(0, -10);
     this.renderTurret(ctx, this.angle);
@@ -77,7 +77,7 @@ Gun.prototype.draw = function(ctx) {
 Gun.prototype.renderStand = function(ctx) {
 // #layer1
     ctx.save();
-    ctx.rotate(this.pos.angle() + Math.PI / 2);
+    ctx.rotate(this.pos.angle + Math.PI / 2);
     ctx.translate(-10,-21);
     ctx.transform(1.000000, 0.000000, 0.000000, 1.000000, 242.924070, -158.196400);
 

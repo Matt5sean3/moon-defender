@@ -5,7 +5,7 @@ function OptionScreen(ctx, parent_screen, game) {
     this.parent_screen = parent_screen;
     this.addOption(
         new TextButton(
-            Vector.create(50, 50),
+            Vector2.create(50, 50),
             "Back",
             "24px joystix",
             "#CCCCCC",
@@ -27,7 +27,7 @@ function OptionScreen(ctx, parent_screen, game) {
     }
 
     var muteEffectsButton = new Button(
-        Vector.create(675, 170),
+        Vector2.create(675, 170),
         new BoundingCircle(25),
         game.toggleEffects.bind(game));
     muteEffectsButton.render = 
@@ -35,7 +35,7 @@ function OptionScreen(ctx, parent_screen, game) {
     this.addOption(muteEffectsButton);
 
     var muteMusicButton = new Button(
-        Vector.create(675, 320),
+        Vector2.create(675, 320),
         new BoundingCircle(25),
         game.toggleMusic.bind(game));
     muteMusicButton.render = 
@@ -44,7 +44,7 @@ function OptionScreen(ctx, parent_screen, game) {
 
     this.addOption(
         new TextButton(
-            Vector.create(100, 150),
+            Vector2.create(100, 150),
             "Effects",
             "24px joystix",
             "#CCCCCC",
@@ -53,7 +53,7 @@ function OptionScreen(ctx, parent_screen, game) {
             }));
 
     this.addSlider(
-        Vector.create(100, 200),
+        Vector2.create(100, 200),
         game.getEffectsVolume.bind(game),
         game.setEffectsVolume.bind(game),
         600,
@@ -62,14 +62,14 @@ function OptionScreen(ctx, parent_screen, game) {
 
     this.addOption(
         new TextButton(
-            Vector.create(100, 300),
+            Vector2.create(100, 300),
             "Music",
             "24px joystix",
             "#CCCCCC",
             function() {}));
 
     this.addSlider(
-        Vector.create(100, 350),
+        Vector2.create(100, 350),
         game.getMusicVolume.bind(game),
         game.setMusicVolume.bind(game),
         600,

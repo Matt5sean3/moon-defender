@@ -15,11 +15,11 @@ Mass.prototype.addGravity = function(mass) {
 
 Mass.prototype.step = function(currentTime, dt) {
     // apply gravity
-    var acceleration = Vector.create(0, 0);
+    var acceleration = Vector2.create(0, 0);
     for(var i= 0; i < this.attractions.length; i++) {
         // need to work on this part a little
         var vector = this.attractions[i].pos.subtract(this.pos);
-        acceleration = acceleration.add(vector.normalize().scalarMultiply(this.attractions[i].mass / vector.radiusSq()));
+        acceleration = acceleration.add(vector.normal.scalarMultiply(this.attractions[i].mass / vector.radiusSq));
     }
     // Go through kinematic equations approximation
     // x = 0.5 * a * t^2 + v0 * t + x0

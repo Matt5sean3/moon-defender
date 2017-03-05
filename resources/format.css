@@ -12,13 +12,12 @@ html, body {
 }
 #canvas {
     position: absolute;
-    left: 0;
     background: #000000;
+    left: 0;
     top: 0;
     bottom: 0;
     right: 0;
-    width: 800px;
-    height: 600px;
     margin: auto;
-    cursor: url("crosshair.ico"),default;
+    cursor: none;
+    /* cursor: url("crosshair.ico"),default; */
 }

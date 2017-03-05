@@ -10,8 +10,8 @@ Laser.prototype = new Mass();
 
 Laser.prototype.draw = function(ctx) {
     ctx.save();
-    ctx.translate(this.pos.x(), this.pos.y());
-    ctx.rotate(this.vel.angle()+Math.PI/2);
+    ctx.translate(this.pos.x, this.pos.y);
+    ctx.rotate(this.vel.angle + Math.PI/2);
     this.render(ctx);
     ctx.restore();
 }
@@ -37,5 +37,5 @@ Laser.prototype.render = function(ctx) {
   ctx.lineTo(0, 0 + r * Math.sin(theta));
   ctx.stroke();
   ctx.restore();
-
 }
+

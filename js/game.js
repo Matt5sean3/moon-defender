@@ -3,7 +3,11 @@
 function Game(ctx) {
     this.ctx = ctx;
 
-    this.origin = Vector.create(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2);
+    /* */
+    this.baseWidth = 800;
+    this.baseHeight = 600;
+
+    this.origin = Vector2.create(this.baseWidth / 2, this.ctx.canvas.height / 2);
     // Adjust the mouse position
 
     this.moon = null;
@@ -13,7 +17,7 @@ function Game(ctx) {
     this.fighters = [];
     this.collisions = new CollisionGroup();
 
-    this.mouse = Vector.create(0, 0);
+    this.mouse = Vector2.create(0, 0);
 
     // more game resources
     this.moon_img = new Image();
@@ -142,13 +146,13 @@ Game.prototype.getEntities = function() {
 
 Game.prototype.start = function() {
     // reset the stage
-    this.moon = new Moon(300000, Vector.create(0, 0), this.life, this.lose.bind(this));
-    this.gun = new Gun(20, Vector.create(0, -30), 0, this.blaster_audio, this.torpedo_audio);
+    this.moon = new Moon(300000, Vector2.create(0, 0), this.life, this.lose.bind(this));
+    this.gun = new Gun(20, Vector2.create(0, -30), 0, this.blaster_audio, this.torpedo_audio);
     this.bullets = [];
     this.fighters = [];
     this.collisions = new CollisionGroup();
 
-    //this.addFighter(Vector.create(100, 50), Vector.create(0, 0));  // this is creating one fighter on every level.
+    //this.addFighter(Vector2.create(100, 50), Vector2.create(0, 0));  // this is creating one fighter on every level.
 
     this.firingLaser = false;
     this.firingBullets = false;
@@ -263,7 +267,7 @@ Game.prototype.handleMouseDown = function(e) {
     // create a new bullet
 
     var gunAngle = this.gun.getAngle() + Math.PI;
-    var v = PolarVector.create(0, 10 * Math.sqrt(2)).rotate(gunAngle).addY(-30);
+    var v = PolarVector2.create(0, 10 * Math.sqrt(2)).rotate(gunAngle).addY(-30);
 
     // left mouse - bullet
     if(e.button === 0){
@@ -354,7 +358,7 @@ Game.prototype.step = function(currentTime, dt) {
     var killed_entity = false;
     for (var i = 0; i < entities.length; i++)
         if(!this.bounds.check(entities[i].getPosition().subtract(
-                Vector.create(-800, -600)))) {
+                Vector2.create(-800, -600)))) {
             entities[i].destroy();
             killed_entity = true;
         }
