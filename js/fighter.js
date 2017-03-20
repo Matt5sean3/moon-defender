@@ -5,7 +5,6 @@ function Fighter(mass, pos, vel) {
 
 Fighter.prototype = new Mass();
 
-
 Fighter.prototype.draw = function(ctx) {
     ctx.save();
     ctx.translate(this.pos.x, this.pos.y);

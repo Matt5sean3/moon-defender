@@ -8,10 +8,12 @@ function OptionScreen(ctx, parent_screen, game) {
             Vector2.create(50, 50),
             "Back",
             "24px joystix",
-            "#CCCCCC",
-            this.close.bind(this)));
+            "#CCCCCC", 
+            (function() {
+                this.next = this.parent_screen;
+            }).bind(this)));
 
-    function renderMuteButton(state_function, ctx, time, dt) {
+    function renderToggleButton(state_function, ctx, time, dt) {
         ctx.save();
         ctx.beginPath();
         ctx.strokeStyle = "#EEEEEE";
@@ -31,7 +33,7 @@ function OptionScreen(ctx, parent_screen, game) {
         new BoundingCircle(25),
         game.toggleEffects.bind(game));
     muteEffectsButton.render = 
-        renderMuteButton.bind(null, game.hasEffects.bind(game));
+        renderToggleButton.bind(null, game.hasEffects.bind(game));
     this.addOption(muteEffectsButton);
 
     var muteMusicButton = new Button(
@@ -39,8 +41,15 @@ function OptionScreen(ctx, parent_screen, game) {
         new BoundingCircle(25),
         game.toggleMusic.bind(game));
     muteMusicButton.render = 
-        renderMuteButton.bind(null, game.hasMusic.bind(game));
+        renderToggleButton.bind(null, game.hasMusic.bind(game));
     this.addOption(muteMusicButton);
+
+    var vrButton = new Button(
+        Vector2.create(675, 475),
+        new BoundingCircle(25),
+        game.toggleVR.bind(game));
+    vrButton.render = renderToggleButton.bind(null, game.hasVR.bind(game));
+    this.addOption(vrButton);
 
     this.addOption(
         new TextButton(
@@ -75,10 +84,16 @@ function OptionScreen(ctx, parent_screen, game) {
         600,
         50,
         100);
+
+    this.addOption(
+        new TextButton(
+            Vector2.create(100, 450),
+            "VR",
+            "24px joystix",
+            "#CCCCCC",
+            function() {}));
+
 }
 
 OptionScreen.prototype = new MenuScreen();
-
-OptionScreen.prototype.render = function() {
-}
 

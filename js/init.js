@@ -5,7 +5,9 @@ function init() {
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
 
-    var game = new Game(ctx);
+    var display = new Display(ctx);
+
+    var game = new Game(display);
     var marathon = new MarathonLevel();
 
     var images = [
@@ -80,59 +82,9 @@ function init() {
         media[c].send();
     }
 
-    var playScreen = new PlayScreen(ctx, game);
-    game.setScreen(playScreen);
-
-    var menuScreen = new MenuScreen(ctx);
-    var optionScreen = new OptionScreen(ctx, menuScreen, game);
-    // Allow just clicking through splash screens
-    var scoreScreen = new ScoreBoardScreen(ctx, menuScreen, []);
-    var gameoverScreen = new TimedSplashScreen(ctx, 3, scoreScreen);
-    var splashScreen = new TimedSplashScreen(ctx, 3, menuScreen);
-    var victoryScreen = new SplashScreen(ctx, splashScreen);
-    var creditsScreen = new SplashScreen(ctx, menuScreen);
-
-    game.setScoreScreen(scoreScreen);
-
-    victoryScreen.render = function(ctx, currentTime, dt) {
-        ctx.drawImage(images[14], 0, 0, 800, 600);
-    }
-
-    creditsScreen.render = function(ctx, currentTime, dt) {
-        ctx.fillStyle = "#CCCCCC";
-        ctx.textAlign = "left";
-        ctx.textBaseline = "top";
-
-        ctx.save();
-        ctx.translate(160, 100);
-        ctx.font = "40px joystix";
-        ctx.fillText("Art", 0, 0);
-        ctx.font = "32px joystix";
-        ctx.fillText("Aaron Nipper", 5, 44);
-        ctx.fillText("Eli Woods", 5, 80);
-        ctx.fillText("Dustin Firebaugh", 5, 116);
-        ctx.restore();
-
-        ctx.save();
-        ctx.translate(160, 300);
-        ctx.font = "40px joystix";
-        ctx.fillText("Code", 0, 0);
-        ctx.font = "32px joystix";
-        ctx.fillText("Matthew Balch", 5, 44);
-        ctx.fillText("Eli Woods", 5, 80);
-        ctx.fillText("Dustin Firebaugh", 5, 116);
-        ctx.restore();
-
-        ctx.font = "12px joystix";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-        ctx.fillStyle = "#CCCCCC";
-        ctx.fillText("click to return to the menu screen", 400, 580);
-    }
-
     // Use prototype well enough
-    function MainLevel(ctx, next, request, render) {
-        SplashScreen.call(this, ctx, next);
+    function MainLevel(canvas, next, request, render) {
+        SplashScreen.call(this, canvas, next);
         if(render !== undefined)
             this.render = render;
         this.level_request = request;
@@ -156,22 +108,23 @@ function init() {
         ctx.fillText("click to proceed", 20, 580);
     }
     MainLevel.prototype.close = function() {
+        SplashScreen.prototype.close.call(this);
+        // Set the level
         this.game.playLevel(new Level(this.level_request.response));
         // Set the win screen
         this.game.setWinScreen(this.nextScreen);
-        SplashScreen.prototype.close.call(this);
     }
 
+    var playScreen = new PlayScreen(canvas, game);
     // We'll have ten levels for some reason
     var levelScreens = new Array(10);
     for(var c = 0; c < levelScreens.length; c++) {
-        levelScreens[c] = new MainLevel(ctx, playScreen, media[5 + c]);
+        levelScreens[c] = new MainLevel(canvas, playScreen, media[5 + c]);
     }
     for(var c = 0; c < levelScreens.length - 1; c++) {
         levelScreens[c].nextScreen = levelScreens[c + 1];
     }
     levelScreens[levelScreens.length - 1].nextScreen = victoryScreen;
-    gameoverScreen.image = images[1];
     levelScreens[0].image = images[3];
     levelScreens[1].image = images[4];
     levelScreens[2].image = images[5];
@@ -182,6 +135,47 @@ function init() {
     levelScreens[7].image = images[10];
     levelScreens[8].image = images[11];
     levelScreens[9].image = images[12];
+
+    game.setScreen(playScreen);
+
+    // Allow just clicking through splash screens
+
+    var menuScreen = new TitleScreen(canvas, images[13], [
+        {
+            "text": "Marathon Mode",
+            "next": playScreen,
+            "cb": game.playLevel.bind(game, marathon)
+        },
+        {
+            "text": "Story Mode",
+            "next": levelScreens[0]
+        }]);
+
+    var scoreScreen = new ScoreBoardScreen(canvas, menuScreen, []);
+    var gameoverScreen = new TimedSplashScreen(canvas, 3, scoreScreen);
+    var victoryScreen = new SplashScreen(canvas, splashScreen);
+
+    var optionScreen = new OptionScreen(canvas, menuScreen, game);
+    menuScreen.addScreen({
+        "text": "Options",
+        "next": optionScreen
+    });
+
+    var creditsScreen = new CreditScreen(canvas, menuScreen);
+    menuScreen.addScreen({
+        "text": "Credits",
+        "next": creditsScreen
+    });
+
+    var splashScreen = new TimedSplashScreen(canvas, 3, menuScreen);
+
+    gameoverScreen.image = images[1];
+
+    game.setScoreScreen(scoreScreen);
+
+    victoryScreen.render = function(ctx, currentTime, dt) {
+        ctx.drawImage(images[14], 0, 0, 800, 600);
+    }
 
     game.setLossScreen(gameoverScreen);
 
@@ -203,8 +197,6 @@ function init() {
         // Add text based on things from our #random slack channel
         var presentText = "Created at";
         // Flavor text gets loaded from a JSON file
-        var belowText = this.text;
-
         ctx.drawImage(this.image, 0, 0, 800, 600);
 
         // above text
@@ -219,21 +211,21 @@ function init() {
         ctx.font = "16px joystix";
         ctx.textBaseline = "bottom";
 
-        var parts = belowText.split(" ");
+        var parts = this.text.split(" ");
         var line = 0;
         var lineText = [];
         var maxLineLength = 60;
         var lineLength = 0;
         // Feels like this could be more elegant somehow
         for(var i = 0; i < parts.length; i++) {
-          if(lineLength + parts[i].length + 1 > maxLineLength) {
-            ctx.fillText(lineText.join(" "), 400, 550 + 16 * line);
-            lineText = [];
-            lineLength = 0;
-            line += 1;
-          }
-          lineText.push(parts[i]);
-          lineLength += 1 + parts[i].length;
+            if(lineLength + parts[i].length + 1 > maxLineLength) {
+                ctx.fillText(lineText.join(" "), 400, 550 + 16 * line);
+                lineText = [];
+                lineLength = 0;
+                line += 1;
+            }
+            lineText.push(parts[i]);
+            lineLength += 1 + parts[i].length;
         }
         ctx.fillText(lineText.join(" "), 400, 550 + 16 * line);
 
@@ -244,65 +236,10 @@ function init() {
         ctx.drawImage(this.image, 0, 0, 800, 600);
     }
 
-    var loadScreen = new LoadScreen(
-        ctx, images, media, splashScreen);
+    var loadScreen = new LoadScreen(images, media, splashScreen);
 
-    menuScreen.render = function(ctx, currentTime, dt) {
-        ctx.drawImage(images[13], 0, 0);
-        ctx.font = "60px joystix";
-        ctx.fillStyle = "#EE1111";
-        ctx.textBaseline = "top";
-        ctx.textAlign = "left";
-        ctx.translate(160, 80);
-        ctx.fillText("Moon", 0, 0);
-        ctx.fillText("Defender", 60, 80);
-    }
-
-    // Add a play button to the menuScreen
-    menuScreen.addOption(
-        new TextButton(
-            Vector2.create(200, 300),
-            "Marathon Mode",
-            "24px joystix",
-            "#CCCCCC",
-            function() {
-                menuScreen.close();
-                game.playLevel(marathon);
-                playScreen.open();
-            }));
-
-    menuScreen.addOption(
-        new TextButton(
-            Vector2.create(200, 350),
-            "Story Mode",
-            "24px joystix",
-            "#CCCCCC",
-            function() {
-                menuScreen.close();
-                levelScreens[0].open();
-            }));
-
-
-    menuScreen.addOption(
-        new TextButton(
-            Vector2.create(200, 400),
-            "Options",
-            "24px joystix",
-            "#CCCCCC",
-            optionScreen.open.bind(optionScreen)));
-
-    menuScreen.addOption(
-        new TextButton(
-            Vector2.create(200, 450),
-            "Credits",
-            "24px joystix",
-            "#CCCCCC",
-            function() {
-                menuScreen.close();
-                creditsScreen.open();
-            }));
-
-    loadScreen.open();
+    display.setScreen(loadScreen);
+    display.step(0);
 }
 
 window.addEventListener("load", init, false);

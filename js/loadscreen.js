@@ -1,7 +1,7 @@
 "use strict";
 
-function LoadScreen(ctx, images, media, nextScreen) {
-    Screen.call(this, ctx);
+function LoadScreen(images, media, nextScreen) {
+    Screen.call(this);
     this.images = images;
     this.media = media;
     this.next = nextScreen;
@@ -22,18 +22,17 @@ LoadScreen.prototype.step = function(currentTime) {
             numerator += 1;
     if(this.images.length + this.media.length == denominator)
     this.fraction = numerator / denominator;
-    if(numerator == denominator) {
-        this.close();
-        this.next.open();
-    }
+    if(numerator == denominator)
+        return this.next;
+    return null;
 }
 
-LoadScreen.prototype.draw = function(currentTime) {
+LoadScreen.prototype.draw = function(ctx, currentTime) {
     // placeholder
-    Screen.prototype.draw.call(this, currentTime);
-    this.ctx.save();
-    this.ctx.font = "20px Arial";
-    this.ctx.fillStyle = "#FFFFFF";
-    this.ctx.fillText("%" + Math.floor(100 * this.fraction), 40, 40);
-    this.ctx.restore();
+    Screen.prototype.draw.call(this, ctx, currentTime);
+    ctx.save();
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText("%" + Math.floor(100 * this.fraction), 40, 40);
+    ctx.restore();
 }

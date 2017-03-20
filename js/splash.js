@@ -3,18 +3,22 @@
 // Some splash screens are timed though
 
 // START SPLASH SCREEN
-function SplashScreen(ctx, nextScreen, media) {
-    Screen.call(this, ctx);
+function SplashScreen(canvas, nextScreen, media) {
+    Screen.call(this);
     this.next = (nextScreen === undefined)? null: nextScreen;
     this.media = (media === undefined)? []: media;
-    if(ctx !== undefined)
-        this.addHandler(ctx.canvas, "mousedown", this.close.bind(this));
+    this.done = false;
+    if(canvas !== undefined)
+        this.addHandler(canvas, "mousedown", (function() {
+            this.done = true;
+        }).bind(this));
 }
 
 SplashScreen.prototype = new Screen();
 
 SplashScreen.prototype.open = function() {
     Screen.prototype.open.call(this);
+    this.done = false;
     // Reset the start of the accompanying media
     for(var i = 0; i < this.media.length; i++)
         this.media[i].currentTime = 0;
@@ -27,11 +31,16 @@ SplashScreen.prototype.unpause = function() {
         this.media[i].play();
 }
 
-SplashScreen.prototype.draw = function(currentTime) {
-    Screen.prototype.draw.call(this, currentTime);
-    this.ctx.save();
-    this.render(this.ctx, this.elapsedTime, this.dt);
-    this.ctx.restore();
+SplashScreen.prototype.step = function(currentTime) {
+    Screen.prototype.step.call(this, currentTime);
+    return (this.done)? this.next : null;
+}
+
+SplashScreen.prototype.draw = function(ctx, currentTime) {
+    Screen.prototype.draw.call(this, ctx, currentTime);
+    ctx.save();
+    this.render(ctx, this.elapsedTime, this.dt);
+    ctx.restore();
 }
 
 SplashScreen.prototype.pause = function() {
@@ -43,7 +52,6 @@ SplashScreen.prototype.pause = function() {
 
 SplashScreen.prototype.close = function() {
     Screen.prototype.close.call(this);
-    this.next.open();
 }
 
 SplashScreen.prototype.render = function(ctx, currentTime, dt) {
@@ -53,21 +61,22 @@ SplashScreen.prototype.render = function(ctx, currentTime, dt) {
 }
 // === END SPLASH SCREEN
 
-function TimedSplashScreen(ctx, duration, nextScreen, media) {
-    SplashScreen.call(this, ctx, nextScreen, media);
+function TimedSplashScreen(canvas, duration, nextScreen, media) {
+    SplashScreen.call(this, canvas, nextScreen, media);
     this.duration = duration;
 }
 
 TimedSplashScreen.prototype = new SplashScreen();
 
-TimedSplashScreen.prototype.draw = function(currentTime) {
-    SplashScreen.prototype.draw.call(this, currentTime);
+TimedSplashScreen.prototype.step = function(currentTime) {
+    SplashScreen.prototype.step.call(this, currentTime);
     if(this.elapsedTime > this.duration)
-        this.close();
+        this.done = true;
+    return SplashScreen.prototype.step.call(this, currentTime);
 }
 
-function ScoreBoardScreen(ctx, nextScreen, media) {
-  SplashScreen.call(this, ctx, nextScreen, media);
+function ScoreBoardScreen(canvas, nextScreen, media) {
+  SplashScreen.call(this, canvas, nextScreen, media);
   this.name = "";
   this.score = 0;
   this.scores = [];
@@ -112,17 +121,17 @@ ScoreBoardScreen.prototype.setScore = function(score) {
   this.score = score;
 }
 
-ScoreBoardScreen.prototype.render = function(currentTime) {
-  this.ctx.save();
-  this.ctx.font = "18px joystix";
-  this.ctx.fillStyle = "#FFFFFF";
-  this.ctx.fillText("Enter your name: ", 100, 50);
+ScoreBoardScreen.prototype.render = function(ctx, currentTime) {
+  ctx.save();
+  ctx.font = "18px joystix";
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillText("Enter your name: ", 100, 50);
   if(this.name != "")
-    this.ctx.fillText("Press enter to submit your score.", 100, 75);
-  this.ctx.fillText(this.name, 400, 50);
-  this.ctx.fillText("LEADERBOARD", 100, 125);
+    ctx.fillText("Press enter to submit your score.", 100, 75);
+  ctx.fillText(this.name, 400, 50);
+  ctx.fillText("LEADERBOARD", 100, 125);
   for(var c = 0; c < this.scores.length; c++)
-    this.ctx.fillText(this.scores[c], 100, 150 + c * 20);
-  this.ctx.restore();
+    ctx.fillText(this.scores[c], 100, 150 + c * 20);
+  ctx.restore();
 }
 

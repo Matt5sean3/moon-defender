@@ -1,13 +1,12 @@
 "use strict";
 
-function Game(ctx) {
-    this.ctx = ctx;
+function Game(display) {
+    this.display = display;
+
+    this.vrEnabled = false;
 
     /* */
-    this.baseWidth = 800;
-    this.baseHeight = 600;
-
-    this.origin = Vector2.create(this.baseWidth / 2, this.ctx.canvas.height / 2);
+    this.origin = Vector2.create(this.display.getWidth() / 2, this.display.getHeight() / 2);
     // Adjust the mouse position
 
     this.moon = null;
@@ -39,7 +38,6 @@ function Game(ctx) {
 
     this.torpedo_audio = new Audio();
     this.torpedo_audio.src = 'resources/torpedo.ogg';
-
 
     this.music = [this.theme_audio];
     this.effects = [
@@ -119,6 +117,24 @@ Game.prototype.getMusicVolume = function() {
     return this.music[0].volume;
 }
 
+Game.prototype.hasVR = function() {
+    return this.vrEnabled;
+}
+
+Game.prototype.toggleVR = function() {
+    this.vrEnabled = !this.vrEnabled;
+    if(this.vrEnabled)
+        this.display.enableVR();
+    else
+        this.display.disableVR();
+}
+
+Game.prototype.enableVR = function() {
+}
+
+Game.prototype.disableVR = function() {
+}
+
 Game.prototype.setScreen = function(screen) {
     this.screen = screen;
 }
@@ -144,42 +160,36 @@ Game.prototype.getEntities = function() {
     return entities;
 }
 
-Game.prototype.start = function() {
-    // reset the stage
+Game.prototype.reset = function() {
     this.moon = new Moon(300000, Vector2.create(0, 0), this.life, this.lose.bind(this));
     this.gun = new Gun(20, Vector2.create(0, -30), 0, this.blaster_audio, this.torpedo_audio);
+    this.theme_audio.loop = true;
+    this.theme_audio.currentTime = 0;
+    this.collisions = new CollisionGroup();
     this.bullets = [];
     this.fighters = [];
-    this.collisions = new CollisionGroup();
+    this.score = 0;
+}
 
-    //this.addFighter(Vector2.create(100, 50), Vector2.create(0, 0));  // this is creating one fighter on every level.
-
+Game.prototype.start = function() {
+    // reset the stage
     this.firingLaser = false;
     this.firingBullets = false;
     this.ccw = false;
     this.cw = false;
-
-    this.theme_audio.loop = true;
-    this.theme_audio.currentTime = 0;
     this.theme_audio.play();
 }
 
 Game.prototype.lose = function() {
-    if(this.screen)
-        this.screen.close();
-    this.scoreScreen.setScore(this.screen.elapsedTime);
+    this.scoreScreen.setScore(this.score);
     this.scoreScreen.getScores();
-    if(this.lossScreen)
-        this.lossScreen.open();
     this.theme_audio.pause();
+    this.screen.next = this.lossScreen;
 }
 
 Game.prototype.win = function() {
-    if(this.screen)
-        this.screen.close();
-    if(this.winScreen)
-        this.winScreen.open();
     this.theme_audio.pause();
+    this.screen.next = this.winScreen;
 }
 
 
@@ -254,97 +264,24 @@ Game.prototype.fighterCollideMoon = function(fighter, moon) {
 Game.prototype.updateMouse = function(e) {
     // Keep the mouse position in game coordinates
     // needs to account for the
-    this.mouse = getMousePosition(e, this.ctx.canvas).subtract(this.origin);
-}
-
-Game.prototype.handleMouseDown = function(e) {
-    e.preventDefault();
-
-    // again emulates offsetX and offsetY, need a shim function for this somewhere
-    this.updateMouse(e);
-
-    var missile_power = 200;
-    // create a new bullet
-
-    var gunAngle = this.gun.getAngle() + Math.PI;
-    var v = PolarVector2.create(0, 10 * Math.sqrt(2)).rotate(gunAngle).addY(-30);
-
-    // left mouse - bullet
-    if(e.button === 0){
-        this.firingLaser = true;
-    }
-    // right mouse - laser beam
-    else{
-        // TODO: what of middle mouse clicks?
-        this.firingBullets = true;
-
-    }
-
-
-    return false;
-}
-
-Game.prototype.handleMouseUp = function(e) {
-    if(e.button == 0) {
-
-    }
-    this.firingBullets = false;
-    this.firingLaser = false;
+    this.mouse = getMousePosition(e, this.display.ctx.canvas).subtract(this.origin);
 }
 
 Game.prototype.hasNoFighters = function() {
     return !this.fighters.length;
 }
 
-Game.prototype.handleMove = function(e) {
-    this.updateMouse(e);
-    return false;
-}
-
-Game.prototype.handleContext = function(e) {
-    if (e.button === 2) {
-        e.preventDefault();
-        return false;
-    }
-}
-
-Game.prototype.handleKeyDown = function(e) {
-    switch(e.keyCode) {
-    case this.muteKey:
-        if(this.hasMusic() == this.hasEffects()) {
-            this.toggleMusic();
-            this.toggleEffects();
-        } else {
-            this.toggleMusic();
-        }
-        break;
-    case this.cwKey:
-        this.cw = true;
-        break;
-    case this.ccwKey:
-        this.ccw = true;
-        break;
-    case this.pauseKey:
-        this.screen.pause_screen.open();
-        break;
-    case this.suicideKey:
-        this.lose();
-        break;
-    }
-}
-
-Game.prototype.handleKeyUp = function(e) {
-    switch(e.keyCode) {
-    case this.cwKey:
-        this.cw = false;
-        break;
-    case this.ccwKey:
-        this.ccw = false;
-        break;
+Game.prototype.toggleMute = function() {
+    if(this.hasMusic() == this.hasEffects()) {
+        this.toggleMusic();
+        this.toggleEffects();
+    } else {
+        this.toggleMusic();
     }
 }
 
 Game.prototype.step = function(currentTime, dt) {
+    this.score += dt;
     if(this.firingLaser && this.gun.ready(this.screen.elapsedTime))
         this.addShot(this.gun.shootLaser(this.screen.elapsedTime));
     if(this.firingBullets && this.gun.ready(this.screen.elapsedTime))
@@ -384,4 +321,5 @@ Game.prototype.step = function(currentTime, dt) {
 Game.prototype.playLevel = function(level) {
     this.level = level;
     this.level.useGame(this);
+    this.reset();
 }

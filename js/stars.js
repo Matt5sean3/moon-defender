@@ -39,14 +39,14 @@ window.addEventListener("load", function() {
 
  
     
-function animate(con, currentTime) {
-    con.save();
+function animate(ctx, currentTime) {
+    ctx.save();
     
     for(var i = 0; i < stars.length; i++) {
-        stars[i].draw(con, currentTime);
+        stars[i].draw(ctx, currentTime);
     }
 
-    con.restore();
+    ctx.restore();
 }
 
 /**
@@ -80,19 +80,19 @@ function Star(x, y, length, opacity) {
  * 
  * @param context
  */
-Star.prototype.draw = function(con, currentTime) {
+Star.prototype.draw = function(ctx, currentTime) {
     
     var frameTime = (currentTime % this.period) / this.period;
     
     var passedCycles = Math.floor(currentTime / this.period);
 
-    con.rotate((Math.PI * 1 / 10));
+    ctx.rotate((Math.PI * 1 / 10));
 
-    // Save the context
-    con.save();
+    // Save the ctxtext
+    ctx.save();
 
     // move into the middle of the canvas, just to make room
-    con.translate(this.x, this.y);
+    ctx.translate(this.x, this.y);
 
     if(this.cycle < passedCycles) {
         this.x = Math.round(Math.random() * screenW);
@@ -101,21 +101,21 @@ Star.prototype.draw = function(con, currentTime) {
     }
     this.opacity = 0.5 + 0.5 * Math.sin(2 * Math.PI * frameTime);
 
-    con.beginPath()
+    ctx.beginPath()
     for (var i = 5; i > 0 ; i--) {
-        con.lineTo(0, this.length);
-        con.translate(0, this.length);
-        con.rotate((Math.PI * 2 / 10));
-        con.lineTo(0, -this.length);
-        con.translate(0, -this.length);
-        con.rotate(-(Math.PI * 6 / 10));
+        ctx.lineTo(0, this.length);
+        ctx.translate(0, this.length);
+        ctx.rotate((Math.PI * 2 / 10));
+        ctx.lineTo(0, -this.length);
+        ctx.translate(0, -this.length);
+        ctx.rotate(-(Math.PI * 6 / 10));
     }
-    con.lineTo(0, this.length);
-    con.closePath();
-    con.fillStyle = "rgba(255, 255, 200, " + this.opacity + ")";
-    con.shadowBlur = 5;
-    con.shadowColor = '#ffff33';
-    con.fill();
+    ctx.lineTo(0, this.length);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(255, 255, 200, " + this.opacity + ")";
+    ctx.shadowBlur = 5;
+    ctx.shadowColor = '#ffff33';
+    ctx.fill();
 
-    con.restore();
+    ctx.restore();
 }

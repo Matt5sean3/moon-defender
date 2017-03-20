@@ -1,15 +1,18 @@
 "use strict";
 
 // === START MENU SCREEN
-function MenuScreen(ctx) {
-    Screen.call(this, ctx);
+function MenuScreen(canvas) {
+    Screen.call(this);
+    this.canvas = canvas;
     this.options = [];
     this.sliders = [];
     this.mouseLocation = Vector2.create(0, 0);
-    if(ctx !== undefined) {
-        this.addHandler(ctx.canvas, "mousedown", this.handleClick.bind(this));
-        this.addHandler(ctx.canvas, "mouseup", this.handleLift.bind(this));
-        this.addHandler(ctx.canvas, "mousemove", this.handleMove.bind(this));
+    this.next = null;
+
+    if(canvas !== undefined) {
+        this.addHandler(canvas, "mousedown", this.handleClick.bind(this));
+        this.addHandler(canvas, "mouseup", this.handleLift.bind(this));
+        this.addHandler(canvas, "mousemove", this.handleMove.bind(this));
     }
 }
 
@@ -17,20 +20,11 @@ MenuScreen.prototype = new Screen();
 
 MenuScreen.prototype.open = function() {
     Screen.prototype.open.call(this);
-    if("parent_screen" in this) {
-        this.parent_screen.pause();
-    }
-}
-
-MenuScreen.prototype.close = function() {
-    Screen.prototype.close.call(this);
-    if("parent_screen" in this) {
-        this.parent_screen.unpause();
-    }
+    this.next = null;
 }
 
 MenuScreen.prototype.handleClick = function(e) {
-    this.mouseLocation = getMousePosition(e, this.ctx.canvas);
+    this.mouseLocation = getMousePosition(e, this.canvas);
     for(var i = 0; i < this.options.length; i++)
         this.options[i].check(this.mouseLocation);
     for(var i = 0; i < this.sliders.length; i++)
@@ -38,15 +32,13 @@ MenuScreen.prototype.handleClick = function(e) {
 }
 
 MenuScreen.prototype.handleMove = function(e) {
-    this.mouseLocation = getMousePosition(e, this.ctx.canvas);
+    this.mouseLocation = getMousePosition(e, this.canvas);
     for(var i = 0; i < this.sliders.length; i++)
         this.sliders[i].move(this.mouseLocation);
-    /* Trigger redraw */
-    this.draw();
 }
 
 MenuScreen.prototype.handleLift = function(e) {
-    this.mouseLocation = getMousePosition(e, this.ctx.canvas);
+    this.mouseLocation = getMousePosition(e, this.canvas);
     for(var i = 0; i < this.sliders.length; i++)
         this.sliders[i].lift(this.mouseLocation);
 }
@@ -69,34 +61,39 @@ MenuScreen.prototype.addSlider = function(loc, get_function, set_function, width
     this.sliders.push(slider);
 }
 
-MenuScreen.prototype.draw = function(currentTime) {
-    Screen.prototype.draw.call(this, currentTime);
-    this.ctx.save();
-    this.render(this.ctx);
-    this.ctx.restore();
+MenuScreen.prototype.step = function(currentTime) {
+    Screen.prototype.step.call(this, currentTime);
+    return this.next;
+}
+
+MenuScreen.prototype.draw = function(ctx, currentTime) {
+    Screen.prototype.draw.call(this, ctx, currentTime);
+    ctx.save();
+    this.render(ctx);
+    ctx.restore();
     
     for(var i = 0; i < this.options.length; i++) {
-        this.ctx.save();
-        this.options[i].draw(this.ctx, this.lastTime, this.dt);
-        this.ctx.restore();
+        ctx.save();
+        this.options[i].draw(ctx, this.lastTime, this.dt);
+        ctx.restore();
     }
     for(var i = 0; i < this.sliders.length; i++) {
-        this.ctx.save();
-        this.sliders[i].draw(this.ctx, this.lastTime, this.dt);
-        this.ctx.restore();
+        ctx.save();
+        this.sliders[i].draw(ctx, this.lastTime, this.dt);
+        ctx.restore();
     }
     /* Draw the mouse */
-    this.ctx.save();
-    this.ctx.strokeStyle = "#FF0000";
-    this.ctx.strokeWidth = 2;
-    this.ctx.beginPath();
-    this.ctx.translate(this.mouseLocation.x, this.mouseLocation.y);
-    this.ctx.moveTo(0, -8);
-    this.ctx.lineTo(0, 8);
-    this.ctx.moveTo(-8, 0);
-    this.ctx.lineTo(8, 0);
-    this.ctx.stroke();
-    this.ctx.restore();
+    ctx.save();
+    ctx.strokeStyle = "#FF0000";
+    ctx.strokeWidth = 2;
+    ctx.beginPath();
+    ctx.translate(this.mouseLocation.x, this.mouseLocation.y);
+    ctx.moveTo(0, -8);
+    ctx.lineTo(0, 8);
+    ctx.moveTo(-8, 0);
+    ctx.lineTo(8, 0);
+    ctx.stroke();
+    ctx.restore();
 }
 
 MenuScreen.prototype.render = function(ctx, currentTime, dt) {

@@ -1,19 +1,22 @@
 "use strict";
 
 // === START PLAY SCREEN
-function PlayScreen(ctx, game) {
-    Screen.call(this, ctx);
+function PlayScreen(canvas, game) {
+    Screen.call(this, canvas);
     this.game = game;
+    this.next = null;
 
-    this.pause_screen = new PauseScreen(ctx, this);
-    this.addHandler(ctx.canvas, "mousedown", game.handleMouseDown.bind(game));
-    this.addHandler(ctx.canvas, "mouseup", game.handleMouseUp.bind(game));
-    this.addHandler(ctx.canvas, "mousemove", game.handleMove.bind(game));
-    this.addHandler(ctx.canvas, "contextmenu", game.handleContext.bind(game));
-    this.addHandler(window, "keydown", game.handleKeyDown.bind(game));
-    this.addHandler(window, "keyup", game.handleKeyUp.bind(game));
-    this.addHandler(window, "blur", 
-        this.pause_screen.open.bind(this.pause_screen));
+    this.pause_screen = new PauseScreen(canvas, this);
+    this.addHandler(canvas, "mousedown", this.handleMouseDown.bind(this));
+    this.addHandler(canvas, "mouseup", this.handleMouseUp.bind(this));
+    this.addHandler(canvas, "mousemove", this.handleMove.bind(this));
+    this.addHandler(canvas, "contextmenu", this.handleContext.bind(this));
+    this.addHandler(window, "keydown", this.handleKeyDown.bind(this));
+    this.addHandler(window, "keyup", this.handleKeyUp.bind(this));
+
+    this.addHandler(window, "blur", (function() {
+        this.next = this.pause_screen;
+    }).bind(this));
 
     /* TODO make base width and base height gathered externally somehow */
     this.baseWidth = 800;
@@ -32,71 +35,133 @@ function PlayScreen(ctx, game) {
 
 PlayScreen.prototype = new Screen();
 
+PlayScreen.prototype.handleKeyDown = function(e) {
+    switch(e.keyCode) {
+    case this.game.muteKey:
+        this.game.toggleMusic();
+        break;
+    case this.game.cwKey:
+        this.game.cw = true;
+        break;
+    case this.game.ccwKey:
+        this.game.ccw = true;
+        break;
+    case this.game.pauseKey:
+        this.next = this.pause_screen;
+        break;
+    case this.game.suicideKey:
+        this.game.lose();
+        break;
+    }
+}
+PlayScreen.prototype.handleKeyUp = function(e) {
+    switch(e.keyCode) {
+    case this.game.cwKey:
+        this.game.cw = false;
+        break;
+    case this.game.ccwKey:
+        this.game.ccw = false;
+        break;
+    }
+}
+
+PlayScreen.prototype.handleContext = function(e) {
+    if(e.button == 2) {
+        e.preventDefault();
+        return false;
+    }
+}
+
+PlayScreen.prototype.handleMove = function(e) {
+    this.game.updateMouse(e);
+    return false;
+}
+
+PlayScreen.prototype.handleMouseDown = function(e) {
+    e.preventDefault();
+    this.game.updateMouse(e);
+    if(e.button == 0) {
+        // left mouse, fire lasers
+        this.game.firingLaser = true;
+    } else {
+        // right mouse, fire bullets
+        this.game.firingBullets = true;
+    }
+    return false;
+}
+
+PlayScreen.prototype.handleMouseUp = function(e) {
+    this.game.firingBullets = false;
+    this.game.firingLaser = false;
+}
+
 PlayScreen.prototype.open = function() {
     Screen.prototype.open.call(this);
+    this.next = null;
     this.game.start();
 }
 
 PlayScreen.prototype.step = function(currentTime) {
     Screen.prototype.step.call(this, currentTime);
     this.game.step(this.elapsedTime, this.dt);
+    return this.next;
 }
 
-PlayScreen.prototype.draw = function(currentTime) {
-    Screen.prototype.draw.call(this, currentTime);
+PlayScreen.prototype.draw = function(ctx, currentTime) {
+    Screen.prototype.draw.call(this, ctx, currentTime);
     // draw the background of stars
-    this.drawBackground();
+    this.drawBackground(ctx);
     // draw the play entities
-    this.ctx.save();
-    this.ctx.translate(this.game.origin.x, this.game.origin.y);
+    ctx.save();
+    ctx.translate(this.game.origin.x, this.game.origin.y);
     var entities = this.game.getEntities();
 
     for(var i = 0; i < entities.length; i++)
-        entities[i].draw(this.ctx);
+        entities[i].draw(ctx);
 
-    this.ctx.restore();
+    ctx.restore();
 
     // draw the number of fighters spawned this level
-    this.ctx.save();
-    this.ctx.fillStyle = "#FF0000";
-    this.ctx.font = "24px joystix";
-    this.ctx.fillText("SCORE: " + Math.round(this.elapsedTime * 1000), 200, 550);
-    this.ctx.restore();
+    ctx.save();
+    ctx.fillStyle = "#FF0000";
+    ctx.font = "24px joystix";
+    ctx.fillText("SCORE: " + Math.round(this.game.score * 1000), 200, 550);
+    ctx.restore();
 
     // draw the HUD
-    this.drawHud();
+    this.drawHud(ctx);
 
     // Draw the cursor
-    this.ctx.save();
-    this.ctx.translate(
+    ctx.save();
+    ctx.translate(
         this.game.mouse.x + this.game.origin.x,
         this.game.mouse.y + this.game.origin.y);
-    this.ctx.lineWidth = 2;
-    this.ctx.strokeStyle = "#FF0000";
-    this.ctx.beginPath();
-    this.ctx.arc(0, 0, 5, 0, 2 * Math.PI);
-    this.ctx.moveTo(0, -8);
-    this.ctx.lineTo(0, 8);
-    this.ctx.moveTo(-8, 0);
-    this.ctx.lineTo(8, 0);
-    this.ctx.stroke();
-    this.ctx.restore();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#FF0000";
+    ctx.beginPath();
+    ctx.arc(0, 0, 5, 0, 2 * Math.PI);
+    ctx.moveTo(0, -8);
+    ctx.lineTo(0, 8);
+    ctx.moveTo(-8, 0);
+    ctx.lineTo(8, 0);
+    ctx.stroke();
+    ctx.restore();
 }
 
-PlayScreen.prototype.drawBackground = function() {
-    animate(this.ctx, this.elapsedTime / 1000);
+PlayScreen.prototype.drawBackground = function(ctx) {
+    animate(ctx, this.elapsedTime / 1000);
 }
 
-PlayScreen.prototype.drawHud = function() {
+PlayScreen.prototype.drawHud = function(ctx) {
     // draw the lifebar of the moon
-    this.lifeBar.draw(this.ctx);
+    this.lifeBar.draw(ctx);
 
     // Draw Moon Defender up in the left corner
-    this.ctx.save();
-    this.ctx.fillStyle = "#FF0000";
-    this.ctx.font = "24px joystix";
-    this.ctx.fillText("Moon Defender", 10, 50);
-    this.ctx.restore();
+    ctx.save();
+    ctx.fillStyle = "#FF0000";
+    ctx.font = "24px joystix";
+    ctx.fillText("Moon Defender", 10, 50);
+    ctx.restore();
 }
 // === END PLAY SCREEN
 
@@ -104,21 +169,25 @@ PlayScreen.prototype.drawHud = function() {
 function PauseScreen(ctx, parent_screen) {
     MenuScreen.call(this, ctx);
     this.parent_screen = parent_screen;
-    this.option_screen = new OptionScreen(this.ctx, this, this.parent_screen.game);
+    this.option_screen = new OptionScreen(ctx, this, this.parent_screen.game);
     this.addOption(
         new TextButton(
             Vector2.create(300, 300),
             "continue",
             "24px joystix",
             "#CCCCCC",
-            this.close.bind(this)));
+            (function() {
+                this.next = this.parent_screen;
+            }).bind(this)));
     this.addOption(
         new TextButton(
             Vector2.create(300, 350),
             "options",
             "24px joystix",
             "#CCCCCC",
-            this.option_screen.open.bind(this.option_screen)));
+            (function() {
+                this.next = this.option_screen;
+            }).bind(this)));
     this.addOption(
         new TextButton(
             Vector2.create(300, 400),
@@ -126,8 +195,8 @@ function PauseScreen(ctx, parent_screen) {
             "24px joystix",
             "#CCCCCC",
             (function() {
-                this.close();
                 this.parent_screen.game.lose();
+                this.next = this.parent_screen;
             }).bind(this)));
 }
 
