@@ -129,12 +129,6 @@ Game.prototype.toggleVR = function() {
         this.display.disableVR();
 }
 
-Game.prototype.enableVR = function() {
-}
-
-Game.prototype.disableVR = function() {
-}
-
 Game.prototype.setScreen = function(screen) {
     this.screen = screen;
 }

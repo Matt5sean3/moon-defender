@@ -6,6 +6,7 @@ function Display(ctx) {
     this.screen = null;
     this.vr = false;
     this.vrDisplay = null;
+    this.collectDisplay();
 }
 
 Display.prototype = new Object();
@@ -18,7 +19,7 @@ Display.prototype.getHeight = function() {
     return this.height;
 }
 
-Display.prototype.processDisplays = function(done, displays) {
+Display.prototype.processDisplays = function(displays) {
     if(displays.length > 0) {
         /* Found a VR display */
         this.vrDisplay = displays[0];
@@ -26,17 +27,15 @@ Display.prototype.processDisplays = function(done, displays) {
         /* Found no VR displays */
         this.vrDisplay = makeVRDisplay();
     }
-    done();
 }
 
-Display.prototype.collectDisplay = function(done) {
+Display.prototype.collectDisplay = function() {
     /* Retrieves the display */
     if("getVRDisplays" in navigator) {
-        navigator.getVRDisplays().then(this.processDisplays.bind(this, done));
+        navigator.getVRDisplays().then(this.processDisplays.bind(this));
     } else {
         /* Use the shim */
         this.vrDisplay = makeVRDisplay();
-        done();
     }
 }
 
@@ -139,10 +138,8 @@ Display.prototype.step = function(currentTime) {
 Display.prototype.enableVR = function() {
 
     if(this.vrDisplay == null) {
-        this.collectDisplay(this.enableVR.bind(this));
         return;
     }
-
     this.vr = true;
 
     window.cancelAnimationFrame(this.frame);
