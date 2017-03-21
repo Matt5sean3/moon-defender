@@ -122,11 +122,7 @@ Game.prototype.hasVR = function() {
 }
 
 Game.prototype.toggleVR = function() {
-    this.vrEnabled = !this.vrEnabled;
-    if(this.vrEnabled)
-        this.display.enableVR();
-    else
-        this.display.disableVR();
+    this.vrEnabled = (this.vrEnabled)? this.display.disableVR() : this.display.enableVR();
 }
 
 Game.prototype.setScreen = function(screen) {

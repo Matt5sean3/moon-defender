@@ -3,9 +3,27 @@
 function init() {
     // Everything is so nice and highly abstracted now
     var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-
-    var display = new Display(ctx);
+    /* Determine the best type of context available */
+    /* For now, have 2d first to make sure repairing that works */
+    var displays = [
+      {
+          "contextName": "2d",
+          "displayType": Display2D
+      },
+      {
+          "contextName": "webgl2",
+          "displayType": DisplayGL
+      },
+      {
+          "contextName": "webgl",
+          "displayType": DisplayGL
+      }
+      ];
+    var ctx = null;
+    for(var c = 0; c < displays.length && !ctx; c++) {
+        ctx = canvas.getContext(displays[c].contextName);
+    }
+    var display = new displays[c].displayType(ctx);
 
     var game = new Game(display);
     var marathon = new MarathonLevel();
