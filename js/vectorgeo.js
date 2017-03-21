@@ -47,8 +47,8 @@ Mat = Object.create(null, {
     "init": {
         "writable": true,
         "configurable": true,
-        "value": function(rows, cols) {
-            this.data = new Float64Array(rows * cols);
+        "value": function(rows, cols, data) {
+            this.data = (data === undefined)? new Float64Array(rows * cols) : data;
             this.dims = [rows, cols];
         }
     },
@@ -108,7 +108,7 @@ Mat = Object.create(null, {
                 return ans;
             } else {
                 /* Mostly for debug, shouldn't happen in production */
-                alert("Matrix multiplication dimensional mismatch");
+                alert("Matrix addition dimensional mismatch");
                 return null;
             }
         }
@@ -118,6 +118,26 @@ Mat = Object.create(null, {
         "writable": true,
         "value": function(that) {
             return this.add(that.inverse);
+        }
+    },
+    "multiply": {
+        "configurable": true,
+        "writable": true,
+        "value": function(that) {
+            if(this.cols == that.rows) {
+                var ans = Mat.create(this.rows, that.cols);
+                for(var i = 0; i < this.rows; i++)
+                    for(var j = 0; j < that.cols; j++) {
+                        var sum = 0;
+                        for(var k = 0; k < this.cols; k++)
+                            sum += this.get(i, k) * that.get(k, j);
+                        ans.set(sum, i, j);
+                    }
+                return ans;
+            } else {
+                alert("Matrix multiplication dimensional mismatch");
+                return null;
+            }
         }
     },
     "scalarMultiply": {

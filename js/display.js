@@ -62,21 +62,67 @@ Display.prototype.step = function(currentTime) {
         this.vrDisplay.getFrameData(this.frameData);
 
         this.ctx.save();
+
+        var screenTransform;
+        /* Clip into the space to draw */
+        /* Apply the total 3D transform */
+
+        /* Draws into a 2 x 2 square centered at 0, 0, 20 */
+        screenTransform =
+            Mat.create(4, 4, Float64Array.from([
+                this.vrLayer.leftBounds[2] * width / 2.0, 0.0, 0.0, 0.0,
+                0.0, this.vrLayer.leftBounds[3] * height / 2.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                this.vrLayer.leftBounds[0] * width + this.vrLayer.leftBounds[2] * width / 2.0,
+                this.vrLayer.leftBounds[1] * height + this.vrLayer.leftBounds[3] * height / 2.0,
+                0.0, 1.0])).multiply(/* GL to 2D conversion */
+            Mat.create(4, 4, this.frameData.leftProjectionMatrix)).multiply( /* Projection matrix */
+            Mat.create(4, 4, this.frameData.leftViewMatrix)).multiply( /* Eye Position matrix */
+            Mat.create(4, 4, Float64Array.from([ /* 2D to GL conversion */
+                2.0 / this.getWidth(), 0.0, 0.0, 0.0,
+                0.0, 2.0 / this.getHeight(), 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                -1.0, -1.0, 20.0, 1.0])));
+
         this.ctx.transform(
-            this.vrLayer.leftBounds[2] * width / 800, 0.0,
-            0.0, this.vrLayer.leftBounds[3] * height / 600,
-            this.vrLayer.leftBounds[0] * width,
-            this.vrLayer.leftBounds[1] * height);
+            screenTransform.get(0, 0), screenTransform.get(1, 0),
+            screenTransform.get(0, 1), screenTransform.get(1, 1),
+            screenTransform.get(0, 3), screenTransform.get(1, 3)
+            );
+
+        this.ctx.beginPath();
+        this.ctx.rect(0, 0, 800, 600);
+        this.ctx.clip();
         this.screen.draw(this.ctx, currentTime);
         this.ctx.restore();
 
-        console.log(this.vrLayer.rightBounds[2]);
-        this.ctx.save(this.vrLayer.rightBounds);
+        this.ctx.save();
+
+        screenTransform =
+            Mat.create(4, 4, Float64Array.from([
+                this.vrLayer.rightBounds[2] * width / 2.0, 0.0, 0.0, 0.0,
+                0.0, this.vrLayer.rightBounds[3] * height / 2.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                this.vrLayer.rightBounds[0] * width + this.vrLayer.rightBounds[2] * width / 2.0,
+                this.vrLayer.rightBounds[1] * height + this.vrLayer.rightBounds[3] * height / 2.0, 
+                0.0, 1.0])).multiply(/* GL to 2D conversion */
+            Mat.create(4, 4, this.frameData.leftProjectionMatrix)).multiply( /* Projection matrix */
+            Mat.create(4, 4, this.frameData.leftViewMatrix)).multiply(/* Eye Position matrix */
+            Mat.create(4, 4, Float64Array.from([ /* 2D to GL conversion, 2x2 square 20 meters away */
+                2.0 / this.getWidth(), 0.0, 0.0, 0.0,
+                0.0, 2.0 / this.getHeight(), 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                -1.0, -1.0, 20.0, 1.0])));
+
         this.ctx.transform(
-            this.vrLayer.rightBounds[2] * width / 800, 0.0,
-            0.0, this.vrLayer.rightBounds[3] * height / 600,
-            this.vrLayer.rightBounds[0] * width,
-            this.vrLayer.rightBounds[1] * height);
+            screenTransform.get(0, 0), screenTransform.get(1, 0),
+            screenTransform.get(0, 1), screenTransform.get(1, 1),
+            screenTransform.get(0, 3), screenTransform.get(1, 3)
+            );
+
+        this.ctx.beginPath();
+        this.ctx.rect(0, 0, 800, 600);
+        this.ctx.clip();
         this.screen.draw(this.ctx, currentTime);
         this.ctx.restore();
 
@@ -118,8 +164,6 @@ Display.prototype.enableVR = function() {
             right.renderWidth / this.ctx.canvas.width,
             right.renderHeight / this.ctx.canvas.height]
     };
-
-    console.log(this.vrLayer.rightBounds.join(", "));
 
     this.vrDisplay.requestPresent([this.vrLayer]).then();
     if(typeof VRFrameData !== "undefined")
