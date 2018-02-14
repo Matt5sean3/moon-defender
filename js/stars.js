@@ -1,114 +1,67 @@
 "use strict";
-var screenH;
-var screenW;
-var stars = [];
-var fps = 50;
-var numStars = 200;
+let stars = [];
 
-window.addEventListener("load", function() {
-
-    // Calculate the screen size
-    screenH = 600;
-    screenW = 800;
-
-    // Get the canvas
-    //canvas = document.getElementById("#space");
-
-    // Fill out the canvas
-
-    // Create all the stars
-    for (var i = 0; i < numStars; i++) {
-        var x = Math.round(Math.random() * screenW);
-        var y = Math.round(Math.random() * screenH);
-        var length = 1 + Math.random() * 2;
-        var opacity = Math.random();
-
-        // Create a new star and draw
-        var star = new Star(x, y, length, opacity);
-
-        // Add the the stars array
-        stars.push(star);
-    }
-
-    
+window.addEventListener("load", () => {
+  stars = populateStars(87)
+  // console.log(stars)
 }, false);
 
-/**
- * Animate the canvas
- */
+let animate = (con, currentTime) => {
+  con.save();
+  stars.map((star) => star.draw(con, currentTime))
+  con.restore();
+}
 
- 
-    
-function animate(con, currentTime) {
-    con.save();
-    
-    for(var i = 0; i < stars.length; i++) {
-        stars[i].draw(con, currentTime);
+let populateStars = (numStars) => {
+  let arr = Array.apply(null, Array(numStars)).map(() => Star.init())
+  return arr;
+}
+
+let Star = {
+  init() {
+    let newStar = Object.create(this);
+    newStar.length = 1 + Math.random() * 1.8;
+    newStar.period = Math.random() * 1.6 + 10;
+    newStar.factor = 1;
+    newStar.period = Math.random() * 1.6 + 10;
+    newStar.cycle = 0;
+    newStar.pos = {
+      x: Math.round(Math.random() * canvas.width),
+      y: Math.round(Math.random() * canvas.height)
     }
+    return newStar;
+  },
+  draw(con, currentTime) {
 
-    con.restore();
-}
+    let frameTime = (currentTime % this.period) / this.period;
 
-/**
- * Star
- * 
- * @param int x
- * @param int y
- * @param int length
- * @param opacity
- */
-function Star(x, y, length, opacity) {
-    /*
-    this.x = parseInt(x);
-    this.y = parseInt(y);
-    this.length = parseInt(length);
-    */
-    this.x = x;
-    this.y = y;
-    this.length = length;
-    this.opacity = opacity;
-    this.factor = 1;
-    this.period = Math.random() * 1.6 + 10;
-    this.cycle = 0;
-}
-
-/**
- * Draw a star
- * 
- * This function draws a start.
- * You need to give the contaxt as a parameter 
- * 
- * @param context
- */
-Star.prototype.draw = function(con, currentTime) {
-    
-    var frameTime = (currentTime % this.period) / this.period;
-    
-    var passedCycles = Math.floor(currentTime / this.period);
-
-    con.rotate((Math.PI * 1 / 10));
+    let passedCycles = Math.floor(currentTime / this.period);
 
     // Save the context
     con.save();
 
     // move into the middle of the canvas, just to make room
-    con.translate(this.x, this.y);
+    con.translate(this.pos.x + this.pos.x / 2, this.pos.y);
 
-    if(this.cycle < passedCycles) {
-        this.x = Math.round(Math.random() * screenW);
-        this.y = Math.round(Math.random() * screenH);
-        this.cycle = passedCycles;
+    if (this.cycle < passedCycles) {
+      this.pos.x = Math.round(Math.random() * con.width);
+      this.pos.y = Math.round(Math.random() * con.width);
+      this.cycle = passedCycles;
     }
+
+    //TODO: have opacity change slowly between .2 and .5
+    //TODO: make opacity transition smoother between frames
     this.opacity = 0.5 + 0.5 * Math.sin(2 * Math.PI * frameTime);
 
+
     con.beginPath()
-    for (var i = 5; i > 0 ; i--) {
-        con.lineTo(0, this.length);
-        con.translate(0, this.length);
-        con.rotate((Math.PI * 2 / 10));
-        con.lineTo(0, -this.length);
-        con.translate(0, -this.length);
-        con.rotate(-(Math.PI * 6 / 10));
+    for (let i = 5; i > 0; i--) {
+      con.lineTo(0, this.length);
+      con.translate(0, this.length);
+      con.rotate((Math.PI * 2 / 10));
+      con.lineTo(0, -this.length);
+      con.translate(0, -this.length);
+      con.rotate(-(Math.PI * 6 / 10));
     }
     con.lineTo(0, this.length);
     con.closePath();
@@ -118,4 +71,5 @@ Star.prototype.draw = function(con, currentTime) {
     con.fill();
 
     con.restore();
+  }
 }
